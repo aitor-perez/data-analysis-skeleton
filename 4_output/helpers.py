@@ -13,7 +13,7 @@
 import json
 from pathlib import Path
 
-ANALYSES_DIR = Path(__file__).parent.parent / "3_analyses"
+ANALYSES_DIR = Path(__file__).resolve().parent.parent / "3_analyses"
 
 REQUIRED_KEYS = {"query", "n_results", "results", "description", "interpretation", "figures"}
 
