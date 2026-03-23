@@ -1,23 +1,22 @@
 # Stage 2: Database
 
-Transform raw data from `1_data/` into a clean, queryable DuckDB database.
+## Goal
 
-## What to do
+Transform raw data from `1_data/` into one clean DuckDB database.
 
-1. Edit `build_db.py` to import and transform your raw data
-2. Run `python build_db.py` (or `make db` from root)
-3. Review the auto-generated `schema.md` to verify the structure
-4. Update `schema.md` with descriptions if needed
+## What Goes Here
+
+- `build_db.py`: the script that imports and transforms raw data
+- `project.duckdb`: the built database
+- `schema.md`: the database contract for analyses
 
 ## Rules
 
-- Output is always a single file: `project.duckdb`
-- The DuckDB is **not committed to git** (it's in `.gitignore`) — it is rebuilt from scripts
-- `schema.md` is the contract between this stage and `3_analyses/`. Keep it accurate.
-- All transformations happen here: cleaning, normalizing, computing derived columns, etc.
+- Output is always a single file: `project.duckdb`.
+- All cleaning and transformations happen here.
+- `project.duckdb` is rebuilt from scripts, not committed.
+- Keep `schema.md` accurate. `3_analyses/` depends on it.
 
-## Files
+## Done When
 
-- `build_db.py` — Master script that builds `project.duckdb`
-- `schema.md` — Auto-generated database documentation (tables, columns, types)
-- `project.duckdb` — The database (gitignored, rebuilt with `make db`)
+`build_db.py` runs cleanly and `schema.md` matches the actual database structure.

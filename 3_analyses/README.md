@@ -1,30 +1,17 @@
 # Stage 3: Analyses
 
-Query the DuckDB and produce structured JSON outputs (+ optional figures).
+## Goal
 
-## How to use
+Answer analysis questions with SQL and structured JSON outputs.
 
-1. Check `0_plan/plan.md` -- the "Analyses" section lists the questions to answer.
-2. Read `2_db/schema.md` to understand available tables and columns.
-3. On first entry, the LLM will propose a batch of analyses based on the plan and schema. Review, adjust, and confirm.
-4. Run `make analyses` (from root) to execute all, or `cd 3_analyses/my_analysis && python run.py` for one.
-5. Refine iteratively: adjust queries, add figures, update interpretations.
+## What Goes Here
 
-## Structure
+- One subfolder per analysis
+- `run.py` in each analysis folder
+- `results.json` in each analysis folder
+- Optional `figures/` folder with outputs based on the same data
 
-```
-3_analyses/
-  value_frequency/
-    run.py              # Script
-    results.json        # Output (JSON)
-    figures/            # Optional
-      bar_chart.pdf
-  another_analysis/
-    run.py
-    results.json
-```
-
-## JSON Schema
+## Rules
 
 Every `results.json` must have this structure:
 
@@ -41,18 +28,14 @@ Every `results.json` must have this structure:
 }
 ```
 
-## Rules
+- Connect to DuckDB with `read_only=True`.
+- Run each script from its own subfolder.
+- Figures must use the same data as the JSON, or a subset.
+- If the schema changes, re-run affected analyses.
+- If an analysis is superseded, prefix it with `_deprecated_` instead of deleting it.
 
-- Connect with `read_only=True`: never modify the DB from here
-- Run scripts from their subfolder: `cd 3_analyses/my_analysis && python run.py`
-- Figures must use the same data as the JSON (or a subset, never more)
-- If the DB schema changes, re-run affected analyses (`make analyses`)
-- Never delete old analyses -- prefix with `_deprecated_` if superseded
+See `example_analysis/` for a minimal template.
 
-## When is this stage done?
+## Done When
 
-When every analysis question from the plan has a subfolder with a valid `results.json` and interpretations have been reviewed. Then move to `4_output/`.
-
-## Example
-
-See `example_analysis/` for a working template.
+Every planned analysis has a subfolder with a valid `results.json` and reviewed interpretation.

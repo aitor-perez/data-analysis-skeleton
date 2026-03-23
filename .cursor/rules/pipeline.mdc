@@ -4,7 +4,7 @@ alwaysApply: true
 
 # Data Analysis Pipeline Rules
 
-This project follows a 5-stage pipeline. Read [agents.md](mdc:agents.md) for full details.
+This project follows a 5-stage pipeline. Read [AGENTS.md](mdc:AGENTS.md) for full details.
 
 ## Pipeline: `0_plan → 1_data → 2_db → 3_analyses → 4_output`
 
@@ -21,8 +21,7 @@ Data flows forward only. Never skip a stage or create backward dependencies.
 7. **API keys** in `.env` only (use `python-dotenv`). Never hardcode secrets.
 8. **DB schema changes** → check and re-run affected analyses in `3_analyses/`.
 9. **Document data sources** in `1_data/sources.yaml`.
-10. **Confidential data** must be added to both `.gitignore` (not committed) and `.cursorignore` (hidden from the AI agent). See `agents.md` Stage 1 rules.
-11. **Skeleton improvements**: when modifying generic files (agents.md, Makefile, helpers.py, templates), stage them and run `make skeleton-sync msg="description"`. This commits with `[skeleton]` prefix and auto-pushes to the skeleton remote.
+10. **Confidential data** must be added to both `.gitignore` (not committed) and `.cursorignore` (hidden from the AI agent). See `AGENTS.md` Stage 1 rules.
 
 ## File References
 

@@ -1,33 +1,20 @@
 # Stage 0: Plan
 
-Define your project before writing any code. This happens in two phases.
+## Goal
 
-## Phase 1: Brainstorm
+Define the project before collecting data or writing pipeline code.
 
-Open a conversation with the LLM (in ask mode) and describe your project idea. You can:
+## What Goes Here
 
-- Have multiple conversations — no need to capture everything in one session
-- Explore different angles, challenge assumptions, refine your thinking
-- The LLM will ask clarifying questions and suggest approaches
+- `plan.md`: project scope, data sources, analyses, and outputs
+- `decisions.md`: non-trivial project decisions and later changes
 
-Don't worry about filling in `plan.md` yet. Just think.
+## Rules
 
-## Phase 2: Consolidate
+- Finish `plan.md` before moving to `1_data/`.
+- Update `decisions.md` when the plan changes in a meaningful way.
+- Make sure the planned data and analyses are realistic before starting the pipeline.
 
-When you're ready, tell the LLM: "let's finalize the plan." It will:
+## Done When
 
-1. Summarize what it understands about the project
-2. Ask you to confirm the overall direction
-3. Go through `plan.md` section by section, asking for any missing details
-4. Fill in `plan.md` with the agreed plan
-
-## Files
-
-- `plan.md` — The project plan (fill this in during Phase 2)
-- `decisions.md` — Decision log (update throughout the project, not just here)
-
-## When is Stage 0 done?
-
-When every section of `plan.md` has real content (no more italic placeholder prompts) and you feel confident about the direction.
-
-**Before moving on**: review `plan.md` carefully. Make sure the research questions are clear, the data sources are realistic, and the planned analyses actually answer the questions. This is the cheapest point to catch problems. Once you start collecting data and writing code, changing direction gets expensive. Then move to `1_data/`.
+`plan.md` has real content in every section and the project direction is clear.
