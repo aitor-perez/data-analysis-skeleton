@@ -44,7 +44,6 @@ def bold(msg):
 # ── Stage 0: Plan ────────────────────────────────────────────────
 def check_plan():
     plan_path = ROOT / "0_plan" / "plan.md"
-    decisions_path = ROOT / "0_plan" / "decisions.md"
 
     issues = []
     details = []
@@ -60,13 +59,6 @@ def check_plan():
     if placeholders:
         issues.append(f"{len(placeholders)} section(s) still have placeholder text")
         return "incomplete", issues, details
-
-    # Check decisions log
-    if decisions_path.exists():
-        dec_text = decisions_path.read_text()
-        entries = re.findall(r"^### \d{4}-\d{2}-\d{2}", dec_text, re.MULTILINE)
-        if entries:
-            details.append(f"{len(entries)} decision(s) logged")
 
     return "complete", issues, details
 

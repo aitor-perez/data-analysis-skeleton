@@ -23,7 +23,7 @@ Now your project has two remotes:
 When you improve something generic (a `Makefile` tweak, a better template, a new helper), you can push it back to the skeleton so other projects benefit:
 
 ```bash
-git add agents.md
+git add AGENTS.md
 make skeleton-sync msg="add rule about figure naming convention"
 ```
 

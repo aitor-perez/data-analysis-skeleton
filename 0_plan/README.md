@@ -7,12 +7,10 @@ Define the project before collecting data or writing pipeline code.
 ## What Goes Here
 
 - `plan.md`: project scope, data sources, analyses, and outputs
-- `decisions.md`: non-trivial project decisions and later changes
 
 ## Rules
 
 - Finish `plan.md` before moving to `1_data/`.
-- Update `decisions.md` when the plan changes in a meaningful way.
 - Make sure the planned data and analyses are realistic before starting the pipeline.
 
 ## Done When
