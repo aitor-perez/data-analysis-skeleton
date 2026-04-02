@@ -17,8 +17,9 @@ con = duckdb.connect(str(DB_PATH))
 
 try:
     # ── Import raw data ─────────────────────────────────────────────
-    # Example: import a CSV
-    # df = pd.read_csv(DATA_DIR / "my_data.csv")
+    # Example: import from original/ and transformed/
+    # df = pd.read_csv(DATA_DIR / "original" / "my_data.csv")
+    # df_enriched = pd.read_csv(DATA_DIR / "transformed" / "classify" / "classified.csv")
     # con.sql("CREATE TABLE my_table AS SELECT * FROM df")
 
     # ── Transformations ─────────────────────────────────────────────
