@@ -1,0 +1,77 @@
+---
+title: "Report Title"
+subtitle: "Subtitle"
+author: "Author Name"
+date: today
+date-format: "D MMMM YYYY"
+lang: en
+format:
+  pdf:
+    output-file: "report-brief.pdf"
+    documentclass: article
+    papersize: a4
+    fontsize: 11pt
+    pdf-engine: lualatex
+    geometry:
+      - top=20mm
+      - bottom=20mm
+      - left=22mm
+      - right=22mm
+    include-in-header:
+      - ../templates/report-brief/preamble-brief.tex
+    header-includes:
+      - \graphicspath{{../templates/report-brief/}{./}}
+    toc: false
+    number-sections: false
+    colorlinks: true
+    linkcolor: linkblue
+    urlcolor: linkblue
+    citecolor: linkblue
+    fig-pos: "H"
+    keep-tex: true
+---
+
+```{python}
+#| echo: false
+import sys; sys.path.insert(0, "..")
+from helpers import load_analysis, load_figure, load_value
+```
+
+\brieftitle{Report Title}{Subtitle}{\today}
+
+```{python}
+#| echo: false
+# Example: load an analysis
+# data = load_analysis("example_analysis")
+# print(f"The dataset contains {data['n_results']} records.")
+```
+
+# Context
+
+_Describe the objective, scope, and data sources in a few sentences._
+
+# Key Findings
+
+\begin{tcolorbox}[reportbox, title=Highlights]
+\textit{Summarize the most important results here.}
+\end{tcolorbox}
+
+_Present the main findings. Never hardcode numbers -- load from JSON._
+
+```{python}
+#| echo: false
+# Example: use data in text
+# data = load_analysis("example_analysis")
+# for row in data["results"]:
+#     print(f"- {row['col1']}: {row['col2']}")
+```
+
+# Discussion
+
+_Interpret the results. What do they mean? What are the next steps?_
+
+<!-- Optional disclaimer -- remove or adapt as needed -->
+<!-- \begin{disclaimerbox}[Disclaimer] -->
+<!-- \small -->
+<!-- \textbf{Data source.} \textit{Describe the data and its limitations.} -->
+<!-- \end{disclaimerbox} -->
