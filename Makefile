@@ -13,9 +13,10 @@
 #   make skeleton-sync msg="..."  Commit + push skeleton improvements
 # ============================================================================
 
-# Auto-detect .venv: use it if it exists, otherwise fall back to python3
+# Auto-detect .venv: use it if it exists, otherwise fall back to python3.
+# Use an absolute path so that `cd subdir && $(PYTHON)` still works.
 ifneq (,$(wildcard .venv/bin/python))
-    PYTHON ?= .venv/bin/python
+    PYTHON ?= $(CURDIR)/.venv/bin/python
 else
     PYTHON ?= python3
 endif
