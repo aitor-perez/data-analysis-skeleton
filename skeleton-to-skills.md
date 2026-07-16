@@ -4,11 +4,11 @@
 
 This document is for whoever implements the migration from the current `data-analysis-skeleton` repository to a system of OpenCode skills.
 
-The current skeleton is a repository you clone for every new data analysis project. It enforces a five-stage pipeline through folder structure, a long `AGENTS.md`, and `Makefile` targets. The goal is to keep the same pipeline behavior, the same conventions, and the same reproducibility, but deliver it through an OpenCode skills catalog rather than a cloneable template.
+The current skeleton is a repository you clone for every new data analysis project. It enforces a five-stage pipeline through folder structure, a long `AGENTS.md`, and `Makefile` targets. The goal is to keep the same pipeline behavior and the same conventions, but deliver it through an OpenCode skills catalog rather than a cloneable template.
 
 An OpenCode skill is a directory containing a `SKILL.md` file with instructions and optional resources such as scripts, templates, or helpers. Skills are loaded once by the assistant and can be invoked in any working directory. They do not need to be part of the project itself.
 
-In the new model, a user creates or opens any directory and says "continue". The assistant inspects the directory, finds the current pipeline stage by running small check scripts, and proposes or executes the next runnable step.
+In the new model, a user creates or opens any directory and invokes a skill explicitly, for example by saying "continue" or "run data-analysis-status". The assistant inspects the directory, reports the current pipeline stage, and proposes or executes the next step.
 
 This note records the design decisions made so far, the alternatives considered, and the questions still open.
 
@@ -27,19 +27,19 @@ Skills, by contrast, live outside any single project. They are installed once an
 
 ---
 
-## Core Design Principle: Explicit Runtime Contracts
+## Core Design Principle: Status-Driven, Assistant-Mediated
 
-The most important decision is to replace implicit folder conventions with explicit contracts that are checked at runtime.
+The most important decision is to replace the long `AGENTS.md` with focused skills, and to keep state inspection as close as possible to the current `status.py`.
 
-In the skeleton, the rule "do not build the database before data is documented" is written in `AGENTS.md`. The assistant is supposed to know and enforce it. In the skills model, each skill declares what input files it requires, ships a small check script, and refuses to run if the inputs are missing.
+In the skeleton, the rule "do not build the database before data is documented" is written in `AGENTS.md`. The assistant is supposed to know and enforce it. In the skills model, `data-analysis-status` runs a deterministic script that reports the project's pipeline state in plain text. Each stage skill validates its own inputs before doing work and fails fast with a clear message if prerequisites are missing.
 
 This means:
 
-- Contracts are explicit: a skill says what it needs.
-- Contracts are enforced: a skill runs its check before doing work.
-- Contracts are discoverable: `data-analysis-status` can run all checks and report which skills are currently runnable.
+- State is explicit: the status skill says what it sees.
+- Stage gates are declared in skill instructions, and each skill checks its own prerequisites when invoked.
+- Enforcement is assistant-mediated, not mechanical. The assistant is expected to consult `data-analysis-status` and follow the stage order, but nothing prevents it from acting on its own.
 
-This is functionally equivalent to `make` targets and dependencies, but interpreted conversationally. Each skill is like a Makefile target; its check script is like a dependency check.
+This is functionally equivalent to the current skeleton. `status.py` already reports state; the assistant already decides what to do next. The skills model just packages those responsibilities more cleanly.
 
 ---
 
@@ -50,12 +50,12 @@ This is functionally equivalent to `make` targets and dependencies, but interpre
 Currently a 435-line instruction document that the assistant must read before any work. In the new model, its contents are split:
 
 - Stage-specific instructions go into the corresponding skill's `SKILL.md`.
-- Cross-cutting rules (Python style, no hardcoded secrets, writing style) go into `shared/conventions.md` and are referenced by the bootstrap context.
-- The pipeline flow and stage-gate logic go into `data-analysis-status`; the thin orchestrator only acts on its output.
+- Cross-cutting rules (Python style, no hardcoded secrets, writing style) go into `shared/conventions.md` and are referenced by the skills.
+- The pipeline flow and stage-order logic go into the thin orchestrator; `data-analysis-status` only reports state.
 
 ### `.cursor/rules/pipeline.mdc`
 
-This Cursor rule file lists the ten critical pipeline rules. It maps to a combination of `data-analysis-status` (state inspection and stage-order logic), the per-stage `check.py` scripts (prerequisite enforcement), and the thin `data-analysis` orchestrator (action policy). The orchestrator itself does not inspect files or validate contracts; it only invokes the skill recommended by `data-analysis-status`.
+This Cursor rule file lists the ten critical pipeline rules. It maps to a combination of `data-analysis-status` (state inspection), the per-stage `SKILL.md` instructions (prerequisite rules), and the thin `data-analysis` orchestrator (action policy). The orchestrator itself does not inspect files or validate contracts; it only acts on the status summary.
 
 ### `Makefile`
 
@@ -66,17 +66,16 @@ The Makefile provides commands like `make status`, `make db`, `make analyses`, `
 - `make analyses` becomes invoking `data-analysis-analyze` over all pending analyses.
 - `make render` becomes invoking `data-analysis-output` for a specific deliverable.
 
-A thin `Makefile` could still exist as a convenience wrapper around the skills, but the primary interface is the orchestrator skill `data-analysis`.
-
 ### `status.py`
 
-This script currently does two things: it checks the state of each stage, and it suggests the next action. In the skills model, these responsibilities split:
+This script currently inspects the state of each stage and prints a human-readable summary. In the skills model:
 
-- The per-stage checks move into each skill's `check.py`. Each skill knows its own prerequisites.
-- The state-inspection and next-action logic move into `data-analysis-status`. It runs the per-stage checks, determines the current stage, and recommends the next skill to run.
-- The orchestrator skill consumes the output of `data-analysis-status` and decides whether to run, propose, or ask.
+- The inspection logic moves into `data-analysis-status` as an internal script.
+- The script prints a text summary of the pipeline state: which stages are complete, which are missing, and which skills could run.
+- It does not output JSON and it does not recommend a single next action.
+- The orchestrator skill consumes the summary and decides whether to run, propose, or ask.
 
-So `status.py` is not directly transplanted. It is a reference implementation that shows what each skill should check. `data-analysis-status` will reuse some of the same filesystem inspection patterns, but it should not duplicate the detailed validation logic of individual stages.
+So `status.py` is essentially transplanted into a skill. The output format stays plain text, and the next-action logic moves into the orchestrator.
 
 ### `0_plan/`
 
@@ -95,8 +94,9 @@ Data collection remains the same. The `data-analysis-collect` skill:
 - Helps collect files into `1_data/`.
 - Documents every file in `1_data/sources.yaml`.
 - Cross-references actual files against the sources log.
+- Flags confidential files in `sources.yaml`.
 
-Equivalence with the skeleton: the same input/output, the same provenance requirements, the same confidentiality warning.
+The difference from the skeleton is that there is no `.cursorignore`, and the skill does not enforce `.gitignore` entries. The user is responsible for making sure confidential files are ignored by git and by the agent through their own OpenCode configuration.
 
 ### `2_db/`
 
@@ -105,9 +105,9 @@ The database build remains the same. The `data-analysis-build-db` skill:
 - Reads `1_data/sources.yaml`.
 - Runs a build script to produce `2_db/project.duckdb`.
 - Auto-generates `2_db/schema.md`.
-- Flags stale databases when raw data changes.
+- Can optionally warn if the database looks older than the raw data, using the same mtime heuristic as the current `status.py`.
 
-Equivalence with the skeleton: same DuckDB target, same schema contract, same rebuild rule.
+No fingerprint files or stored state are introduced. The user decides when to rebuild.
 
 ### `3_analyses/`
 
@@ -116,9 +116,8 @@ Analyses remain one subfolder per question, each with `run.py`, `results.json`, 
 - Reads `2_db/schema.md` and `0_plan/plan.md`.
 - Proposes analyses for unanswered questions.
 - Creates subfolders, writes `run.py`, runs it, validates `results.json`.
-- Flags analyses affected by schema changes.
 
-Equivalence with the skeleton: same JSON contract, same figure rules, same deprecation convention.
+The skeleton does not automatically detect analyses invalidated by schema changes, so the skills model does not either. The user re-runs analyses when needed.
 
 ### `4_output/`
 
@@ -134,12 +133,15 @@ Equivalence with the skeleton: same deliverable structure, same templates, same 
 
 ### `4_output/helpers.py`
 
-This helper module is used by Quarto deliverables to load `results.json`. It belongs to the `data-analysis-output` skill. There are two ways to make it available to Quarto:
+This helper module is used by Quarto deliverables to load `results.json`. It belongs to the `data-analysis-output` skill, but it is copied into the project at `4_output/helpers.py`, just as the skeleton does.
 
-- **Copy into the project**: `data-analysis-output` places a `helpers.py` inside each deliverable subfolder or at the root of `4_output/`. The deliverable is then self-contained and will render even if the skills are not installed. The downside is that improvements to the helper do not propagate to existing deliverables.
-- **Keep internal to the skill**: `data-analysis-output` adds its own helper directory to Python's path during rendering. Existing deliverables benefit from updates automatically, but they depend on the skill being installed. Archived projects may not render cleanly in the future.
+Reasons to copy:
 
-The current skeleton copies helpers into the project. Keeping that behavior preserves equivalence, but the internal approach is cleaner long-term. A reasonable compromise is to copy helpers into the project by default and provide an option to use the internal version during active development.
+- Deliverables can be rendered without the skills installed.
+- Old projects keep working even if the catalog changes later.
+- It preserves equivalence with the current skeleton.
+
+The downside is that improvements to the helper do not propagate to existing deliverables. Since the rendered PDF/HTML is the final artifact and old deliverables are rarely re-rendered, this is acceptable for v1.
 
 Some functions may be useful to multiple skills. These should live in a shared utility directory inside the catalog, imported by the skills internally using relative paths. They are not exposed to the project directory and they are not installed into the user's Python environment. Examples include:
 
@@ -163,31 +165,16 @@ The rule "API keys live in `.env`" remains. The catalog can ship an `.env.exampl
 
 ### `requirements.txt`
 
-The skeleton uses `requirements.txt` for Python dependencies. The catalog will use a single `pyproject.toml` at the root instead. This is the recommended approach because it is the modern Python standard, supports optional dependency groups per skill, and avoids the sprawl of multiple requirements files.
+The skeleton uses `requirements.txt` for Python dependencies. The catalog will also use a single `requirements.txt` at the catalog root for the packages the skills need (`duckdb`, `pandas`, `python-dotenv`, `pyyaml`, etc.).
 
-A possible structure:
-
-```toml
-[project]
-name = "data-analysis-skills"
-dependencies = [
-    "duckdb",
-    "pandas",
-    "python-dotenv",
-    "pyyaml",
-]
-
-[project.optional-dependencies]
-output = ["quarto", "matplotlib", "plotly", "altair"]
-collect = ["requests"]
-```
+Project-specific analysis dependencies (whatever `3_analyses/*/run.py` and `2_db/build_db.py` need) remain in the project's own `requirements.txt`, just as they do today.
 
 #### Dependency handling at runtime
 
-`pyproject.toml` declares dependencies, but it does not install them automatically. A practical pattern is:
+`requirements.txt` declares dependencies, but it does not install them automatically. A practical pattern is:
 
 1. Each skill documents its required packages in its `SKILL.md`.
-2. The skill's entry scripts check imports at startup and fail fast with a clear `ImportError` if something is missing.
+2. The Python code the assistant runs on the skill's behalf checks imports at startup and fails fast with a clear `ImportError` if something is missing.
 3. The assistant, on seeing the error, can offer to install the missing package. The skill itself does not silently install dependencies.
 
 This avoids surprising side effects while still making it easy to recover. It works with both global and per-project Python environments.
@@ -196,9 +183,7 @@ This avoids surprising side effects while still making it easy to recover. It wo
 
 The current skeleton has a strong rule: confidential files must be added to both `.gitignore` (so they are never committed) and `.cursorignore` (so the AI agent cannot read them).
 
-In the skills model, the assistant will not edit `.gitignore` or any equivalent ignore file. The data collection skill can document the rule and warn the user, but enforcement becomes the user's responsibility. This is a deliberate trade-off: skills gain portability and avoid mutating project configuration, but they lose the ability to enforce repository-level privacy automatically.
-
-If this is unacceptable, an alternative is to provide an optional skill or script that audits the project for confidential files and suggests ignore-file entries, but does not apply them without confirmation.
+In the skills model, `.cursorignore` is not used. The agent's read access is governed by the user's OpenCode permissions. `data-analysis-collect` still flags confidential files in `sources.yaml`, but it does not try to prevent the agent from reading them. That responsibility lies outside the catalog.
 
 ### `3_analyses/example_analysis/`
 
@@ -226,7 +211,7 @@ data-analysis-skills/
     data-analysis/
   shared/                     # Internal utilities and shared conventions
     conventions.md            # Cross-cutting rules (Python style, secrets, writing style)
-  pyproject.toml              # Dependency declarations
+  requirements.txt            # Dependencies for the skills themselves
   README.md                   # Installation and usage instructions
 ```
 
@@ -240,14 +225,15 @@ Proposed skill catalog:
 | `data-analysis-build-db` | Builds `2_db/project.duckdb` and generates `2_db/schema.md`. |
 | `data-analysis-analyze` | Proposes, creates, and runs analyses in `3_analyses/`, producing `results.json`. |
 | `data-analysis-output` | Renders Quarto deliverables in `4_output/` from analyses. |
-| `data-analysis-status` | Inspects the project, reports the current pipeline stage, and recommends the next runnable skill. |
-| `data-analysis` | Thin policy skill. Runs `data-analysis-status`, reads the recommended next step, and invokes it (confirming with the user). |
+| `data-analysis-status` | Runs a deterministic status script and prints a text summary of the pipeline state. |
+| `data-analysis` | Thin policy skill. Reads the status summary and decides whether to run, propose, or ask. |
+
+The descriptions above summarize responsibilities. The actual `SKILL.md` frontmatter must use trigger-style descriptions such as "Use when..." (see the `SKILL.md frontmatter` section below).
 
 Each skill is a directory with at least:
 
 - `SKILL.md`: prose instructions for the assistant, with YAML frontmatter.
-- `check.py`: a script that returns whether the skill's prerequisites are satisfied in the current directory.
-- Optional internal resources (templates, helpers, examples).
+- Optional internal resources (templates, helpers, examples, scripts).
 
 #### SKILL.md frontmatter
 
@@ -281,47 +267,53 @@ description: Use when raw data files exist in 1_data/ but are not yet documented
 
 This convention is borrowed from the Superpowers framework, which found that agents sometimes follow a workflow-summary description instead of reading the full skill.
 
-#### Check script interface
+#### Status script output
 
-`data-analysis-status` needs a uniform way to ask every skill whether it can run. The orchestrator consumes the aggregated result. There are several reasonable designs:
+`data-analysis-status` runs a deterministic script that prints a plain-text summary. The script itself is a resource inside the `data-analysis-status` skill; the skill instructions reference it relative to the skill directory, and OpenCode provides the skill's absolute path at load time. The exact format can evolve, but it should include at least:
 
-- **Exit-code-only**: the script exits `0` if inputs are satisfied and non-zero otherwise. This is simple but gives no explanation for failures.
-- **Structured output**: the script prints a small JSON or YAML blob describing whether it can run, what is missing, and whether any inputs are stale. This is richer and easier to explain to the user.
-- **Convention over configuration**: the orchestrator knows each skill's required files and checks them itself, without running a per-skill script. This centralizes logic but makes the orchestrator aware of every skill's internals.
+- The current pipeline stage.
+- Which stages are complete, incomplete, empty, or stale.
+- Which stage skills are runnable given the current state.
+- Any issues or notes (e.g., undocumented data files, missing results.json).
 
-A good default is the structured-output approach, because it keeps the contract explicit and lets each skill explain its own prerequisites. The exact format should be chosen by the implementer, but it should be the same for every skill.
+Example output:
+
+```text
+Pipeline Status
+===============
+Stage 0 — Plan:     Complete
+Stage 1 — Data:     Partial (undocumented: raw_2026.csv)
+Stage 2 — Database: Not built
+Stage 3 — Analyses: Empty
+Stage 4 — Output:   Empty
+
+Runnable skills: data-analysis-collect, data-analysis-plan
+Notes: Raw data exists but is not fully documented.
+```
+
+The orchestrator skill reads this summary and applies a policy. For example, on "continue" it might run the earliest incomplete stage skill that appears runnable. The status skill itself does not recommend a single next action.
 
 #### How the orchestrator discovers skills
 
-The orchestrator must know which skills exist. Options include:
-
-- **Hardcoded list**: the orchestrator skill's instructions contain a fixed list of skill names. This is the simplest to implement, but adding a new skill requires editing the orchestrator.
-- **Convention-based discovery**: every subdirectory of a known `skills/` folder is treated as a skill. This is flexible, but it assumes a fixed catalog layout.
-- **Manifest file**: a `catalog.yaml` or `skills.yaml` at the catalog root lists the available skills, their order, and their stage. This is a clean middle ground: adding a skill means editing one manifest, not the orchestrator's logic.
-
-The manifest approach is probably the best long-term choice. It separates the "what skills exist" question from the "what should I do next" question. With the thin orchestrator, the manifest is primarily consumed by `data-analysis-status`; the orchestrator itself only needs to know how to invoke the skill named in `next_recommended_skill`.
+The orchestrator contains a small, fixed list of stage skill names. It does not dynamically discover skills. Adding a new stage skill requires updating the orchestrator's instructions, but with only five pipeline stages this is acceptable and keeps the orchestrator simple.
 
 #### Orchestrator responsibilities
 
 `data-analysis` is a thin policy skill. It does not inspect the directory itself. Its job is:
 
-1. Invoke `data-analysis-status` and read its structured output.
-2. If the output contains a `next_recommended_skill`, decide whether to run it automatically, propose it, or ask for confirmation.
-3. Invoke the recommended skill.
+1. Invoke `data-analysis-status` and read its text summary.
+2. Decide whether to run the next likely skill, propose a choice, or ask for confirmation.
+3. Invoke the chosen skill.
 
-All state inspection lives in `data-analysis-status`. The orchestrator only translates status output into action. If no skill is recommended (for example, the pipeline is complete or a blocker requires human input), the orchestrator reports that to the user instead of doing nothing. This keeps the policy small and easy to test.
+All state inspection lives in `data-analysis-status`. The orchestrator only translates the status summary into action. If no skill is clearly runnable, the orchestrator reports that to the user instead of doing nothing. This keeps the policy small and easy to test.
 
-#### Bootstrap context
+#### No automatic bootstrap
 
-The plugin should inject a small, conditional prompt into conversations. The prompt triggers when the current directory contains the standard data analysis folders (`0_plan/`, `1_data/`, etc.) or when the user explicitly invokes `data-analysis-init`. It reminds the agent that the data analysis skills are available.
+The catalog does not inject a bootstrap prompt when a data-analysis directory is opened. Skills are invoked explicitly by the user. OpenCode loads skills based on their `SKILL.md` descriptions, so natural language like "continue" or "what should I do next" can still trigger the orchestrator skill if its description is well written.
 
-Example bootstrap message:
+This avoids dependencies on OpenCode plugin trigger APIs and keeps unrelated conversations free of pipeline context.
 
-> This directory is a data analysis project. Follow `shared/conventions.md` for cross-cutting rules. Run `data-analysis-status` to get the current stage and the `next_recommended_skill`. Use `data-analysis` to act on that recommendation, or invoke stage skills such as `data-analysis-plan`, `data-analysis-collect`, and `data-analysis-build-db` directly.
-
-The bootstrap should not appear in unrelated directories. It should also not appear in empty directories unless the user has just invoked `data-analysis-init` or asked to start a data analysis project. This keeps unrelated conversations clean while making ongoing projects aware of the skills.
-
-The entry point for a brand-new project is `data-analysis-init`. Once the project scaffold exists, the bootstrap context and skill descriptions handle the rest.
+The entry point for a brand-new project is `data-analysis-init`. Once the project scaffold exists, the user invokes stage skills or the orchestrator directly.
 
 #### How the catalog is distributed
 
@@ -343,7 +335,7 @@ Packaging the catalog as a Python package is not recommended. The skills must be
 
 ## Relationship to Superpowers
 
-This design was influenced by the [Superpowers](https://github.com/obra/superpowers) framework. We adopt its conventions for skill packaging, `SKILL.md` frontmatter, and plugin distribution. However, our domain requires stronger state inspection and orchestration than Superpowers provides, so we keep the explicit check scripts and the `data-analysis` orchestrator skill.
+This design was influenced by the [Superpowers](https://github.com/obra/superpowers) framework. We adopt its conventions for skill packaging, `SKILL.md` frontmatter, and plugin distribution. However, our domain requires a deterministic status script and a thin orchestrator, so we keep `data-analysis-status` and `data-analysis` as separate skills.
 
 ---
 
@@ -358,12 +350,12 @@ This design was influenced by the [Superpowers](https://github.com/obra/superpow
 | `make analyses` runs all pending analyses. | `data-analysis-analyze` scans the plan and existing results, then fills gaps. |
 | `make render` produces a deliverable. | `data-analysis-output` creates the deliverable from templates and analyses. |
 | `sources.yaml`, `schema.md`, `results.json`, and rendered files are the durable artifacts. | Exactly the same files remain the durable artifacts. |
-| Stage gates are enforced by a long instruction document. | Stage gates are enforced by explicit check scripts. |
+| Stage gates are enforced by a long instruction document. | Stage gates are declared in skill instructions; status reports state and stage skills validate their own inputs. |
 | Improvements are backported via `make skeleton-sync`. | Improvements are made directly to the catalog repo. |
 
 The key equivalence is: the analysis artifacts (`plan.md`, `sources.yaml`, `project.duckdb`, `schema.md`, `results.json`, rendered reports) should be the same after a sequence of skill invocations as they would be after running the corresponding `make` commands in the skeleton. The difference is how the assistant knows what to do next.
 
-Some auxiliary files may differ depending on implementation choices. For example, `data-analysis-output` might copy `helpers.py` into the project or keep it internal. Deliverable templates might be copied from skill resources or referenced externally. The behavior that matters is reproducibility of the analysis, not byte-for-byte identity of helper files.
+Some auxiliary files may differ depending on implementation choices. For example, `data-analysis-output` copies `helpers.py` into the project. Deliverable templates are copied from skill resources. The behavior that matters is the resulting analysis artifacts, not byte-for-byte identity of helper files.
 
 ---
 
@@ -372,10 +364,6 @@ Some auxiliary files may differ depending on implementation choices. For example
 ### One monolithic skill vs. several composable skills
 
 A single `data-analysis-pipeline` skill could handle all stages. This would simplify orchestration but reduce flexibility and reusability. We lean toward multiple skills plus a thin orchestrator.
-
-### Manifest files vs. check scripts
-
-We considered declaring contracts in a machine-readable file such as `contract.yaml` inside each skill. This would be clean but adds a new format to maintain. We prefer small check scripts, because they reuse the existing Makefile-like intuition and are easy to test independently.
 
 ### Lazy vs. eager project initialization
 
@@ -418,7 +406,7 @@ The orchestrator could be implemented in two ways:
 - **As a regular skill**: the user invokes it explicitly, for example by saying "continue". This keeps the logic scoped and avoids loading pipeline rules into unrelated conversations. The downside is that the user must remember to invoke it.
 - **As a system prompt rule**: the assistant always knows about the pipeline and can propose the next step automatically. This makes "continue" feel seamless, but it loads pipeline context into every conversation, even those that have nothing to do with data analysis.
 
-A regular skill is the chosen approach, but it is kept thin. All state inspection is delegated to `data-analysis-status`, so the orchestrator remains a small policy layer. The system prompt approach is not needed for now because the bootstrap context plus the orchestrator skill handle "continue" cleanly.
+A regular skill is the chosen approach, but it is kept thin. All state inspection is delegated to `data-analysis-status`, so the orchestrator remains a small policy layer. The system prompt approach is not needed for now because the user can invoke the orchestrator skill directly.
 
 ### Forward flow vs. iteration
 
@@ -441,9 +429,9 @@ The following are design choices we are intentionally leaving open for the first
 
 - Final folder structure convention (likely kept, but not locked).
 - Whether the orchestrator auto-runs, proposes, or asks.
-- Whether there is a state file beyond the existing artifacts.
-- How exactly shared helpers are exposed to the project directory.
+- Whether `data-analysis-status` includes mtime-based staleness warnings or keeps the summary minimal.
 - Whether the catalog ships a thin `Makefile` as a fallback for command-line users, or is skills-only.
+- How `data-analysis-init` populates the scaffold (README, `.env.example`, example analysis, etc.).
 
 ---
 
@@ -452,9 +440,9 @@ The following are design choices we are intentionally leaving open for the first
 The following are research or verification questions that will be answered by building and testing the catalog:
 
 1. How do we test that a skill-run analysis is equivalent to a skeleton-run analysis? A good candidate is to reproduce one complete pipeline using both approaches and compare artifacts.
-2. How do we handle Python environment creation? Should the catalog assume a global environment, create one per project, or manage its own?
+2. Should the catalog recommend or assume a particular Python environment setup (global, project venv, or conda), given that the catalog itself does not install packages?
 3. Should `data-analysis-collect` support API-based collection directly, or should that remain a user-provided script?
-4. How do we handle schema changes that invalidate existing analyses? Should the orchestrator detect them automatically, or should the user trigger re-analysis manually?
+4. Should we add an explicit command or skill to re-run all analyses after a schema change, or should that remain a manual user decision?
 
 ---
 
@@ -463,12 +451,12 @@ The following are research or verification questions that will be answered by bu
 1. Create a new repository `data-analysis-skills`.
 2. Define the catalog layout:
    - `.opencode/` with plugin files so OpenCode can register the skills.
-   - `skills/<name>/SKILL.md` plus check scripts for each skill.
-   - `shared/` for internal utilities.
-   - `pyproject.toml` for dependencies.
+   - `skills/<name>/SKILL.md` for each skill.
+   - `shared/` for internal utilities and `conventions.md`.
+   - `requirements.txt` for skill dependencies.
 3. Implement `data-analysis-status` first. It should be able to inspect an empty directory and report that the project is at stage 0. This validates the state-discovery mechanism before any real work is done.
 4. Implement `data-analysis-init` so the catalog can bootstrap a new project.
 5. Implement the orchestrator skill `data-analysis`, which uses `data-analysis-status` to decide what to do next.
-6. Implement one complete stage skill, probably `data-analysis-plan` or `data-analysis-build-db`, to validate the contract/check pattern end-to-end.
+6. Implement one complete stage skill, probably `data-analysis-plan` or `data-analysis-build-db`, to validate the skill pattern end-to-end.
 7. Implement the remaining stage skills one by one.
 8. Run a full pipeline on a sample dataset and compare the resulting artifacts with those produced by the current skeleton.
