@@ -13,9 +13,10 @@
 #   make skeleton-sync msg="..."  Commit + push skeleton improvements
 # ============================================================================
 
-# Auto-detect .venv: use it if it exists, otherwise fall back to python3
+# Auto-detect .venv: use it if it exists, otherwise fall back to python3.
+# Use an absolute path so that `cd subdir && $(PYTHON)` still works.
 ifneq (,$(wildcard .venv/bin/python))
-    PYTHON ?= .venv/bin/python
+    PYTHON ?= $(CURDIR)/.venv/bin/python
 else
     PYTHON ?= python3
 endif
@@ -60,6 +61,7 @@ analyses:
 	done
 
 # Render a specific deliverable: make render d=2026-02-18-short-report
+# Supports both Quarto (.qmd) and data exports (export.py)
 render:
 	@if [ -z "$(d)" ]; then \
 		echo "✗ Usage: make render d=<deliverable-folder>"; \
@@ -72,14 +74,25 @@ render:
 		echo "✗ Directory 4_output/$(d) not found."; \
 		exit 1; \
 	fi
-	@for qmd in 4_output/$(d)/*.qmd; do \
+	@found=0; \
+	for qmd in 4_output/$(d)/*.qmd; do \
 		if [ -f "$$qmd" ]; then \
 			echo "▶ Rendering $$qmd"; \
 			(cd "4_output/$(d)" && quarto render $$(basename "$$qmd")); \
+			found=1; \
 		fi; \
-	done
+	done; \
+	if [ -f "4_output/$(d)/export.py" ]; then \
+		echo "▶ Running 4_output/$(d)/export.py"; \
+		(cd "4_output/$(d)" && $(PYTHON) export.py); \
+		found=1; \
+	fi; \
+	if [ $$found -eq 0 ]; then \
+		echo "⚠ No .qmd or export.py found in 4_output/$(d)"; \
+	fi
 
 # Render all deliverables (every subfolder in 4_output/ except templates/)
+# Supports both Quarto (.qmd) and data exports (export.py)
 outputs:
 	@for dir in 4_output/*/; do \
 		case "$$dir" in \
@@ -91,6 +104,10 @@ outputs:
 				(cd "$$dir" && quarto render $$(basename "$$qmd")); \
 			fi; \
 		done; \
+		if [ -f "$$dir/export.py" ]; then \
+			echo "▶ Running $$dir/export.py"; \
+			(cd "$$dir" && $(PYTHON) export.py); \
+		fi; \
 	done
 
 # Full pipeline
@@ -106,6 +123,10 @@ clean:
 	find 4_output -name "*.tex" -not -path "*/templates/*" -not -name "titlepage.tex" -delete
 	find 4_output -name "*.log" -not -path "*/templates/*" -delete
 	find 4_output -type d -name "*_files" -exec rm -rf {} + 2>/dev/null || true
+	@# Clean data export outputs (but not the export.py scripts or README.md)
+	find 4_output -name "*.csv" -not -path "*/templates/*" -delete 2>/dev/null || true
+	find 4_output -name "*.xlsx" -not -path "*/templates/*" -delete 2>/dev/null || true
+	find 4_output -name "export.json" -not -path "*/templates/*" -delete 2>/dev/null || true
 
 # Commit skeleton changes and push to the skeleton remote automatically.
 # Usage: make skeleton-sync msg="improve Makefile with clean target"

@@ -2,40 +2,42 @@
 
 ## Objective
 
-_What question are we answering? What is the goal of this analysis?_
+*What question are we answering? What is the goal of this analysis?*
 
 ## Audience
 
-_Who will read the output? (e.g., colleagues, management, academic reviewers)_
+*Who will read the output? (e.g., colleagues, management, academic reviewers)*
 
 ## Input Data
 
-_What data do we need? Where does it come from?_
+*What data do we need? Where does it come from?*
+
 
 | Data | Source | Format | Notes |
-|------|--------|--------|-------|
-| | | | |
+| ---- | ------ | ------ | ----- |
+|      |        |        |       |
+
 
 ## Transformations
 
-_What cleaning, normalization, or enrichment is needed? What will the DuckDB schema look like?_
+*What cleaning, normalization, or enrichment is needed? What will the DuckDB schema look like?*
 
 ## Analyses
 
-_What questions will we answer? What queries/calculations are needed?_
+*What questions will we answer? What queries/calculations are needed?*
 
-1. 
-2. 
-3. 
+
+
+
 
 ## Output Format
 
-_Report? Slides? Both? What structure and style?_
+*Report? Slides? Both? What structure and style?*
 
 ## Scientific Framework
 
-_Is there a theoretical framework guiding the analysis? (e.g., a model, taxonomy, established metrics)_
+*Is there a theoretical framework guiding the analysis? (e.g., a model, taxonomy, established metrics)*
 
 ## Known Risks & Limitations
 
-_What could go wrong? What are the data limitations?_
+*What could go wrong? What are the data limitations?*

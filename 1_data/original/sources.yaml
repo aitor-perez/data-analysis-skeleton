@@ -1,6 +1,6 @@
 # Data Sources
-# Document every raw data file in this folder.
-# This file is the single source of truth for data provenance.
+# Document every raw data file collected from external sources.
+# Files in this folder are never modified after collection.
 
 # ── Actual data sources (add yours below) ─────────────────────
 []
@@ -16,7 +16,6 @@
 #   confidential: false
 #   notes: "Exported with all optional fields included"
 #
-# Imperfect provenance is better than no provenance:
 # - file: mystery_data.xlsx
 #   origin: "Received from Jean Dupont via email"
 #   url: ""
@@ -25,4 +24,4 @@
 #   format: XLSX
 #   encoding: ""
 #   confidential: false
-#   notes: "Provenance uncertain — verify with Jean before publishing"
+#   notes: "Provenance uncertain -- verify with Jean before publishing"

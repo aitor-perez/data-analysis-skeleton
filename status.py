@@ -44,7 +44,6 @@ def bold(msg):
 # ── Stage 0: Plan ────────────────────────────────────────────────
 def check_plan():
     plan_path = ROOT / "0_plan" / "plan.md"
-    decisions_path = ROOT / "0_plan" / "decisions.md"
 
     issues = []
     details = []
@@ -60,13 +59,6 @@ def check_plan():
     if placeholders:
         issues.append(f"{len(placeholders)} section(s) still have placeholder text")
         return "incomplete", issues, details
-
-    # Check decisions log
-    if decisions_path.exists():
-        dec_text = decisions_path.read_text()
-        entries = re.findall(r"^### \d{4}-\d{2}-\d{2}", dec_text, re.MULTILINE)
-        if entries:
-            details.append(f"{len(entries)} decision(s) logged")
 
     return "complete", issues, details
 
@@ -89,22 +81,32 @@ def _parse_sources_yaml(path):
         return None  # signals parse error
 
 
+def _collect_data_files(directory):
+    """Recursively collect data files from a directory, returning paths relative to 1_data/."""
+    skip = {"README.md", "sources.yaml", ".gitkeep"}
+    data_dir = ROOT / "1_data"
+    files = []
+    if directory.is_dir():
+        for f in sorted(directory.rglob("*")):
+            if f.is_file() and f.name not in skip and not f.name.startswith(".") and not f.suffix == ".py":
+                files.append(str(f.relative_to(data_dir)))
+    return files
+
+
 def check_data():
     data_dir = ROOT / "1_data"
-    sources_path = data_dir / "sources.yaml"
+    original_dir = data_dir / "original"
+    transformed_dir = data_dir / "transformed"
+    sources_path = original_dir / "sources.yaml"
 
     issues = []
     details = []
 
-    # Find actual data files (exclude meta files and scripts)
-    meta_files = {"README.md", "sources.yaml"}
-    data_files = sorted(
-        f.name
-        for f in data_dir.iterdir()
-        if f.is_file() and f.name not in meta_files and not f.name.startswith(".")
-    )
+    original_files = _collect_data_files(original_dir)
+    transformed_files = _collect_data_files(transformed_dir)
+    all_data_files = original_files + transformed_files
 
-    # Parse sources.yaml
+    # Parse sources.yaml (documents original files only)
     documented = []
     if sources_path.exists():
         result = _parse_sources_yaml(sources_path)
@@ -113,17 +115,21 @@ def check_data():
         else:
             documented = result
     else:
-        issues.append("sources.yaml not found")
+        issues.append("original/sources.yaml not found")
 
-    if not data_files and not documented:
+    if not all_data_files and not documented:
         return "empty", issues, details
 
-    if data_files:
-        details.append(f"{len(data_files)} data file(s): {', '.join(data_files)}")
+    if original_files:
+        names = [f.split("/", 1)[-1] for f in original_files]
+        details.append(f"{len(original_files)} original file(s): {', '.join(names)}")
+    if transformed_files:
+        details.append(f"{len(transformed_files)} transformed file(s)")
 
-    # Cross-reference
-    undocumented = [f for f in data_files if f not in documented]
-    missing_files = [f for f in documented if f not in data_files]
+    # Cross-reference original files against sources.yaml
+    original_names = [f.split("/", 1)[-1] for f in original_files]
+    undocumented = [f for f in original_names if f not in documented]
+    missing_files = [f for f in documented if f not in original_names]
 
     if undocumented:
         issues.append(f"Undocumented: {', '.join(undocumented)}")
@@ -133,9 +139,9 @@ def check_data():
     if documented:
         details.append(f"{len(documented)} documented in sources.yaml")
 
-    if not issues and documented and data_files:
+    if not issues and documented and all_data_files:
         return "complete", issues, details
-    elif data_files or documented:
+    elif all_data_files or documented:
         return "partial", issues, details
     return "empty", issues, details
 
@@ -166,12 +172,14 @@ def check_db():
 
     # Staleness check: is DB older than any data file?
     db_mtime = db_path.stat().st_mtime
-    meta_files = {"README.md", "sources.yaml"}
+    skip = {"README.md", "sources.yaml", ".gitkeep"}
     stale_files = []
-    for f in data_dir.iterdir():
-        if f.is_file() and f.name not in meta_files and not f.name.startswith("."):
-            if f.stat().st_mtime > db_mtime:
-                stale_files.append(f.name)
+    for subdir in [data_dir / "original", data_dir / "transformed"]:
+        if subdir.is_dir():
+            for f in subdir.rglob("*"):
+                if f.is_file() and f.name not in skip and not f.name.startswith("."):
+                    if f.stat().st_mtime > db_mtime:
+                        stale_files.append(str(f.relative_to(data_dir)))
 
     if stale_files:
         issues.append(f"DB older than: {', '.join(stale_files)}")
@@ -332,12 +340,12 @@ def check_output():
 NEXT_ACTIONS = {
     (0, "missing"): "Create 0_plan/plan.md or restore it from the template.",
     (0, "incomplete"): "Fill in the remaining sections of 0_plan/plan.md.",
-    (1, "empty"): "Collect raw data into 1_data/ and document in sources.yaml.",
-    (1, "partial"): "Document all data files in 1_data/sources.yaml.",
+    (1, "empty"): "Collect raw data into 1_data/original/ and document in sources.yaml.",
+    (1, "partial"): "Document all original files in 1_data/original/sources.yaml.",
     (2, "not_built"): "Edit 2_db/build_db.py, then run: make db",
     (2, "stale"): "Data has changed. Rebuild with: make db",
     (2, "partial"): "Fix build_db.py and rebuild with: make db",
-    (3, "empty"): "Create analysis subfolders in 3_analyses/. See example_analysis/ for the template.",
+    (3, "empty"): "Create analysis subfolders in 3_analyses/. See AGENTS.md for the run.py template.",
     (3, "incomplete"): "Run analyses to generate results.json: make analyses",
     (3, "partial"): "Fix or complete remaining analyses, then: make analyses",
     (4, "empty"): "Create a deliverable subfolder in 4_output/ from a template.",

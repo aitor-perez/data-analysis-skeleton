@@ -6,6 +6,8 @@ __pycache__/
 .venv/
 *.pyc
 
+.DS_Store
+
 # DuckDB (rebuilt from scripts)
 2_db/*.duckdb
 2_db/*.wal
@@ -20,3 +22,4 @@ __pycache__/
 # Keep template files
 !4_output/templates/**
 .cursorignore
+

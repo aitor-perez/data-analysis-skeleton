@@ -2,32 +2,4 @@
 alwaysApply: true
 ---
 
-# Data Analysis Pipeline Rules
-
-This project follows a 5-stage pipeline. Read [agents.md](mdc:agents.md) for full details.
-
-## Pipeline: `0_plan → 1_data → 2_db → 3_analyses → 4_output`
-
-Data flows forward only. Never skip a stage or create backward dependencies.
-
-## Critical Rules
-
-1. **Python + Pandas**. Concise, flat scripts. No `if __name__ == "__main__"`. Minimize functions.
-2. **Single DuckDB** (`2_db/project.duckdb`). Always `read_only=True` outside of `2_db/`.
-3. **One subfolder per analysis** in `3_analyses/`. Each has `run.py` + `results.json` + optional `figures/`.
-4. **JSON contract**: every `results.json` has: `query`, `n_results`, `results`, `description`, `interpretation`, `figures`.
-5. **Never hardcode numbers** in `4_output/`. Load everything from `3_analyses/*/results.json`. Each deliverable is a dated subfolder in `4_output/` (e.g. `2026-02-18-short-report/`). Three template types: report (PDF), slides (PDF), dashboard (HTML).
-6. **Figures use the same data** as their parent JSON (or a subset, never more).
-7. **API keys** in `.env` only (use `python-dotenv`). Never hardcode secrets.
-8. **DB schema changes** → check and re-run affected analyses in `3_analyses/`.
-9. **Document data sources** in `1_data/sources.yaml`.
-10. **Confidential data** must be added to both `.gitignore` (not committed) and `.cursorignore` (hidden from the AI agent). See `agents.md` Stage 1 rules.
-11. **Skeleton improvements**: when modifying generic files (agents.md, Makefile, helpers.py, templates), stage them and run `make skeleton-sync msg="description"`. This commits with `[skeleton]` prefix and auto-pushes to the skeleton remote.
-
-## File References
-
-- DB schema: [schema.md](mdc:2_db/schema.md)
-- Analysis helper: [helpers.py](mdc:4_output/helpers.py)
-- Data sources: [sources.yaml](mdc:1_data/sources.yaml)
-- Project plan: [plan.md](mdc:0_plan/plan.md)
-- Decisions log: [decisions.md](mdc:0_plan/decisions.md)
+Read and follow [AGENTS.md](mdc:AGENTS.md) for all project rules.
