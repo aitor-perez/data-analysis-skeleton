@@ -1,0 +1,95 @@
+---
+title: "Presentation Title"
+subtitle: "Subtitle"
+author: "Author Name"
+institute: "EPFL"
+date: today
+date-format: "D MMMM YYYY"
+format:
+  beamer:
+    theme: default
+    colortheme: default
+    fontsize: 10pt
+    aspectratio: 169
+    pdf-engine: lualatex
+    section-titles: false
+    include-in-header:
+      - ./preamble.tex
+    header-includes:
+      - \graphicspath{{./}}
+    fig-pos: "H"
+    keep-tex: true
+---
+
+```{python}
+#| echo: false
+import sys; sys.path.insert(0, "..")
+from helpers import load_analysis, load_figure
+```
+
+## Context
+
+- What is the project about?
+- What question are we answering?
+
+## Disclaimer
+
+<!-- Adapt the items below to your project. Remove if not needed. -->
+\begin{disclaimerbox}[Disclaimer]
+\small
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=2pt]
+\item \textbf{Data source.} \textit{Describe the data and its limitations.}
+\item \textbf{AI-assisted.} \textit{If applicable, describe how AI was used.}
+\item \textbf{Scope.} \textit{Clarify what this analysis is and is not.}
+\end{itemize}
+\end{disclaimerbox}
+
+## Data
+
+```{python}
+#| echo: false
+# data = load_analysis("example_analysis")
+# print(f"Dataset: {data['n_results']} records")
+```
+
+- Describe data sources
+- Describe transformations
+
+## Key Findings
+
+```{python}
+#| echo: false
+# Example: print interpretation
+# data = load_analysis("example_analysis")
+# print(data["interpretation"])
+```
+
+<!-- Example: include a figure from an analysis -->
+<!-- ![Caption](`{python} load_figure("example_analysis", "chart.pdf")`) -->
+
+## Details
+
+<!-- Example: small table on a slide -->
+<!-- \begin{table} -->
+<!-- \small -->
+<!-- \begin{tabular}{lr} -->
+<!-- \toprule -->
+<!-- \textbf{Category} & \textbf{Count} \\ -->
+<!-- \midrule -->
+<!-- A & 123 \\ -->
+<!-- B & 456 \\ -->
+<!-- \bottomrule -->
+<!-- \end{tabular} -->
+<!-- \end{table} -->
+
+```{python}
+#| echo: false
+# data = load_analysis("example_analysis")
+# for row in data["results"][:5]:
+#     print(f"- {row['col1']}: {row['col2']}")
+```
+
+## Conclusion
+
+- Summary of findings
+- Next steps
