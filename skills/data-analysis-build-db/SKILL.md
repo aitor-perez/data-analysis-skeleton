@@ -15,10 +15,10 @@ Build the DuckDB database from raw data.
 
 ## How to use
 
-1. Run the build-db script from the project root:
+1. Run the build-db script from the project root using the project's Python:
 
    ```bash
-   python <path-to-skills>/data-analysis-build-db/build_db.py
+   .venv/bin/python <path-to-skills>/data-analysis-build-db/build_db.py
    ```
 
 2. Read the output.

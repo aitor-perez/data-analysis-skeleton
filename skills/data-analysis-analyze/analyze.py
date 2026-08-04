@@ -1,12 +1,12 @@
 # analyze.py — Create and run analyses
 # Run from the project root:
-#   python <path-to-skills>/data-analysis-analyze/analyze.py
+#   .venv/bin/python <path-to-skills>/data-analysis-analyze/analyze.py
 #
 # Create a new analysis:
-#   python <path-to-skills>/data-analysis-analyze/analyze.py --create value_frequency
+#   .venv/bin/python <path-to-skills>/data-analysis-analyze/analyze.py --create value_frequency
 #
 # Run all analyses:
-#   python <path-to-skills>/data-analysis-analyze/analyze.py
+#   .venv/bin/python <path-to-skills>/data-analysis-analyze/analyze.py
 
 import argparse
 import json

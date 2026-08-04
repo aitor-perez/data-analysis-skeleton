@@ -1,8 +1,8 @@
 # build_db.py — Copy build_db.py template and run the database build
 # Run from the project root:
-#   python <path-to-skills>/data-analysis-build-db/build_db.py
+#   .venv/bin/python <path-to-skills>/data-analysis-build-db/build_db.py
 # Or point to a project directory:
-#   python <path-to-skills>/data-analysis-build-db/build_db.py --project-dir /path/to/project
+#   .venv/bin/python <path-to-skills>/data-analysis-build-db/build_db.py --project-dir /path/to/project
 
 import argparse
 import re

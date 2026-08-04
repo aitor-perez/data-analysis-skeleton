@@ -1,8 +1,8 @@
 # init.py — Bootstrap a new data-analysis project
 # Run from the project root:
-#   python <path-to-skills>/data-analysis-init/init.py
+#   python3 <path-to-skills>/data-analysis/init.py
 # Or point to a project directory:
-#   python <path-to-skills>/data-analysis-init/init.py --project-dir /path/to/project
+#   python3 <path-to-skills>/data-analysis/init.py --project-dir /path/to/project
 
 import argparse
 import subprocess
@@ -25,7 +25,7 @@ args = parse_args()
 project_dir = args.project_dir.resolve()
 skill_dir = Path(__file__).parent.resolve()
 catalog_dir = skill_dir.parent
-templates_dir = skill_dir / "templates"
+templates_dir = skill_dir / "templates" / "init"
 requirements_file = catalog_dir / "requirements.txt"
 
 # Directories to create

@@ -18,7 +18,7 @@ Create and run heavy data enrichment transformations in `1_data/transformed/<nam
 ### Scaffold a transformation
 
 ```bash
-python <path-to-skills>/data-analysis-transform/transform.py --create classify
+.venv/bin/python <path-to-skills>/data-analysis-transform/transform.py --create classify
 ```
 
 This creates `1_data/transformed/classify/classify.py` from the template.
@@ -26,7 +26,7 @@ This creates `1_data/transformed/classify/classify.py` from the template.
 ### Run a transformation
 
 ```bash
-python <path-to-skills>/data-analysis-transform/transform.py --name classify
+.venv/bin/python <path-to-skills>/data-analysis-transform/transform.py --name classify
 ```
 
 This runs `1_data/transformed/classify/classify.py` from its own folder.

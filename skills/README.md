@@ -57,8 +57,7 @@ use skill tool to list skills
 
 | Skill | Responsibility |
 |---|---|
-| `data-analysis` | Orchestrator. Inspects pipeline state and proposes the next step. |
-| `data-analysis-init` | Bootstrap a new project and create `.venv/`. |
+| `data-analysis` | Orchestrator. Inspects pipeline state, initializes new projects, and proposes the next step. |
 | `data-analysis-plan` | Create and fill `0_plan/plan.md`. |
 | `data-analysis-collect` | Document raw files in `1_data/original/sources.yaml`. |
 | `data-analysis-transform` | Run heavy enrichment in `1_data/transformed/<name>/`. |
@@ -69,16 +68,16 @@ use skill tool to list skills
 
 ## Usage
 
-Invoke a skill explicitly with OpenCode's native `skill` tool:
+Invoke the orchestrator explicitly with OpenCode's native `skill` tool:
 
 ```
 use skill tool to load data-analysis
 ```
 
-Or invoke a stage skill directly:
+The orchestrator will initialize a new project if needed, then guide you through the pipeline. You can also invoke a stage skill directly:
 
 ```
-use skill tool to load data-analysis-init
+use skill tool to load data-analysis-plan
 ```
 
 ## Pipeline

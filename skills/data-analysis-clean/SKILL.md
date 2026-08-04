@@ -16,16 +16,16 @@ Remove generated pipeline artifacts while preserving raw data, plans, scripts, a
 
 ## How to use
 
-1. Run the clean script to see what would be deleted:
+1. Run the clean script to see what would be deleted using the project's Python:
 
    ```bash
-   python <path-to-skills>/data-analysis-clean/clean.py
+   .venv/bin/python <path-to-skills>/data-analysis-clean/clean.py
    ```
 
 2. If the list looks correct, run with `--yes`:
 
    ```bash
-   python <path-to-skills>/data-analysis-clean/clean.py --yes
+   .venv/bin/python <path-to-skills>/data-analysis-clean/clean.py --yes
    ```
 
 ## What is removed

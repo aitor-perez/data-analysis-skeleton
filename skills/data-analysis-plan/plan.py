@@ -1,8 +1,8 @@
 # plan.py — Create and validate the project plan
 # Run from the project root:
-#   python <path-to-skills>/data-analysis-plan/plan.py
+#   .venv/bin/python <path-to-skills>/data-analysis-plan/plan.py
 # Or point to a project directory:
-#   python <path-to-skills>/data-analysis-plan/plan.py --project-dir /path/to/project
+#   .venv/bin/python <path-to-skills>/data-analysis-plan/plan.py --project-dir /path/to/project
 
 import argparse
 import re

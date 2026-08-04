@@ -19,10 +19,10 @@ Create and render final deliverables from analysis results.
 ## How to use
 
 1. Make sure analyses are complete.
-2. Run the output script with a deliverable type and name:
+2. Run the output script with a deliverable type and name using the project's Python:
 
    ```bash
-   python <path-to-skills>/data-analysis-output/output.py --type report --name short-report
+   .venv/bin/python <path-to-skills>/data-analysis-output/output.py --type report --name short-report
    ```
 
    Supported types:

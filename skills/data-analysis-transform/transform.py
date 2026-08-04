@@ -1,9 +1,9 @@
 # transform.py — Scaffold and run data transformations
 # Run from the project root:
-#   python <path-to-skills>/data-analysis-transform/transform.py --name classify
+#   .venv/bin/python <path-to-skills>/data-analysis-transform/transform.py --name classify
 #
 # Scaffold a new transformation:
-#   python <path-to-skills>/data-analysis-transform/transform.py --create classify
+#   .venv/bin/python <path-to-skills>/data-analysis-transform/transform.py --create classify
 
 import argparse
 import subprocess

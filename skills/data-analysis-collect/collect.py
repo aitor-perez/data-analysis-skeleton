@@ -1,8 +1,8 @@
 # collect.py — Validate and document raw data files
 # Run from the project root:
-#   python <path-to-skills>/data-analysis-collect/collect.py
+#   .venv/bin/python <path-to-skills>/data-analysis-collect/collect.py
 # Or point to a project directory:
-#   python <path-to-skills>/data-analysis-collect/collect.py --project-dir /path/to/project
+#   .venv/bin/python <path-to-skills>/data-analysis-collect/collect.py --project-dir /path/to/project
 
 import argparse
 import re

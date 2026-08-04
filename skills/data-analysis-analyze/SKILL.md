@@ -18,7 +18,7 @@ Create and run analyses in `3_analyses/`.
 ### Create a new analysis
 
 ```bash
-python <path-to-skills>/data-analysis-analyze/analyze.py --create <name>
+.venv/bin/python <path-to-skills>/data-analysis-analyze/analyze.py --create <name>
 ```
 
 This creates `3_analyses/<name>/run.py` from the template. The assistant should then help the user edit `run.py` to answer the planned question.
@@ -26,7 +26,7 @@ This creates `3_analyses/<name>/run.py` from the template. The assistant should 
 ### Run all analyses
 
 ```bash
-python <path-to-skills>/data-analysis-analyze/analyze.py
+.venv/bin/python <path-to-skills>/data-analysis-analyze/analyze.py
 ```
 
 This runs every `run.py` in `3_analyses/`, validates the resulting `results.json`, and reports any failures.

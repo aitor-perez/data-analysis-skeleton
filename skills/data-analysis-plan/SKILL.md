@@ -16,10 +16,10 @@ Create and fill `0_plan/plan.md` for the current project.
 
 ## How to use
 
-1. Run the plan script from the project root:
+1. Run the plan script from the project root using the project's Python:
 
    ```bash
-   python <path-to-skills>/data-analysis-plan/plan.py
+   .venv/bin/python <path-to-skills>/data-analysis-plan/plan.py
    ```
 
 2. Read the output.

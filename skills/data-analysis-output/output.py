@@ -1,6 +1,6 @@
 # output.py — Create and render deliverables
 # Run from the project root:
-#   python <path-to-skills>/data-analysis-output/output.py --type report --name my-report
+#   .venv/bin/python <path-to-skills>/data-analysis-output/output.py --type report --name my-report
 #
 # Supported types: report, report-brief, slides, dashboard, export
 

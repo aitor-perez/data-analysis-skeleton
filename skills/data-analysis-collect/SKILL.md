@@ -16,10 +16,10 @@ Collect raw data files and document them in `1_data/original/sources.yaml`.
 
 ## How to use
 
-1. Run the collect script from the project root:
+1. Run the collect script from the project root using the project's Python:
 
    ```bash
-   python <path-to-skills>/data-analysis-collect/collect.py
+   .venv/bin/python <path-to-skills>/data-analysis-collect/collect.py
    ```
 
 2. Read the output. It will report:

@@ -1,8 +1,8 @@
 # status.py — Pipeline status and validation
 # Run from the project root:
-#   python <path-to-skills>/data-analysis/status.py
+#   .venv/bin/python <path-to-skills>/data-analysis/status.py
 # Or point to a project directory:
-#   python <path-to-skills>/data-analysis/status.py --project-dir /path/to/project
+#   .venv/bin/python <path-to-skills>/data-analysis/status.py --project-dir /path/to/project
 
 import argparse
 import json
@@ -53,6 +53,22 @@ def parse_args():
         help="Project directory to inspect (default: current working directory).",
     )
     return parser.parse_args()
+
+
+# ── Initialization ───────────────────────────────────────────────
+def check_init(root):
+    """Check whether the project has been initialized by data-analysis-init."""
+    required = {
+        ".venv/bin/python": root / ".venv" / "bin" / "python",
+        "utils/llm.py": root / "utils" / "llm.py",
+        "0_plan/": root / "0_plan",
+        "1_data/original/": root / "1_data" / "original",
+        "2_db/": root / "2_db",
+        "3_analyses/": root / "3_analyses",
+        "4_output/": root / "4_output",
+    }
+    missing = [name for name, path in required.items() if not path.exists()]
+    return missing
 
 
 # ── Stage 0: Plan ────────────────────────────────────────────────
@@ -361,8 +377,17 @@ STAGES = [
     ("Stage 4 — Output", check_output),
 ]
 
+missing_init = check_init(root)
+
 print(f"\n{bold('Pipeline Status')}")
 print("═" * 50)
+
+if missing_init:
+    print(f"\n{bold('Project initialized:')}  {fail('No')}")
+    for item in missing_init:
+        print(f"  {fail('Missing: ' + item)}")
+else:
+    print(f"\n{bold('Project initialized:')}  {ok('Yes')}")
 
 first_incomplete = None
 
