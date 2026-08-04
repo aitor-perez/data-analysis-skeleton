@@ -1,0 +1,13 @@
+{
+  "name": "data-analysis-skills",
+  "version": "0.1.0",
+  "description": "OpenCode skills catalog for the data-analysis pipeline",
+  "type": "module",
+  "main": ".opencode/plugins/data-analysis.js",
+  "keywords": [
+    "opencode",
+    "skills",
+    "data-analysis",
+    "pipeline"
+  ]
+}
