@@ -31,8 +31,25 @@ The orchestrator (`skeleton`) keeps skeleton-specific responsibilities:
 - Clean generated artifacts (`clean.py`).
 - Skeleton-specific report constraints, such as: never hardcode numbers; load
   values and figures from `3_analyses/*/results.json` using `helpers.py`.
+- Data collection and provenance: document raw files in `1_data/original/` using
+  `document_sources.py`, invoked by the orchestrator with skeleton-specific paths.
 - Planning: a two-step, conversational process to fill `0_plan/plan.md` from the
   skeleton template.
+
+### Data collection and provenance
+
+Collection is skeleton-specific because it targets the `1_data/original/`
+directory and the `sources.yaml` format. The implementation lives in the
+orchestrator as `skeleton/document_sources.py`, but it is written like a
+standalone skill: all inputs are CLI arguments and no skeleton paths are
+hard-coded inside it.
+
+```bash
+skeleton/document_sources.py --input-dir 1_data/original --output 1_data/original/sources.yaml
+```
+
+This keeps the orchestrator thin and makes it easy to promote
+`document_sources.py` to a standalone `document-sources` skill later if desired.
 
 ### Planning workflow
 
@@ -120,7 +137,7 @@ Outputs:
 
 ### 3. `run-analysis`
 
-Generate and run an analysis from instructions against a DuckDB database.
+Scaffold and run an analysis from instructions against a DuckDB database.
 
 ```bash
 run-analysis \
@@ -136,10 +153,11 @@ Inputs:
   written.
 
 Behavior:
-- Copy a built-in, fixed `run.py` template into `--out-dir`.
-- Fill the template using the inferred database path, `schema.md`, and
-  instructions.
-- Run the generated `run.py`.
+- Copy a built-in, fixed `run.py` template into `--out-dir` only if `run.py` does
+  not already exist. Never overwrite an existing `run.py`.
+- The assistant uses the inferred database path, `schema.md`, and
+  `instructions.md` to help the user write the analysis code inside the template.
+- Once the user confirms, run `run.py`.
 - Validate `results.json` against the standard schema.
 
 Outputs:
@@ -157,7 +175,7 @@ Output schema (unchanged from current skeleton):
 
 ### 4. `transform-data`
 
-Generate and run a data transformation from instructions.
+Scaffold and run a data transformation from instructions.
 
 ```bash
 transform-data \
@@ -173,9 +191,12 @@ Inputs:
 - `--out-dir`: directory where `run.py` and output files are written.
 
 Behavior:
-- Copy a minimal, generic `run.py` template into `--out-dir`.
-- Fill the template with the input paths and output directory.
-- Run the generated `run.py`.
+- Copy a minimal, generic `run.py` template into `--out-dir` only if `run.py`
+  does not already exist. Never overwrite an existing `run.py`.
+- The assistant uses the provided input paths, output directory, and
+  `instructions.md` to help the user write the transformation code inside the
+  template.
+- Once the user confirms, run `run.py`.
 - Validate that `--out-dir` contains at least one output file; fail if it is empty.
 
 Template contents (minimal):
@@ -221,6 +242,7 @@ skills_v2/
     SKILL.md
     init.py
     status.py
+    document_sources.py
     clean.py
     templates/
       init/
