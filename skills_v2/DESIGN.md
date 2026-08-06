@@ -24,13 +24,16 @@ skeleton-aware orchestrator skill and several generic, reusable skills.
 The orchestrator (`skeleton`) keeps skeleton-specific responsibilities:
 
 - Initialize a new project (`init.py`): create directories, copy skeleton
-  templates, create `.venv`, install requirements.
+  templates, create `.venv`, and install the catalog Python package in editable
+  mode so generated scripts can import `llm_batch`.
 - Report pipeline state (`status.py`).
 - Decide the next pipeline step and invoke the appropriate standalone skill with
   skeleton-specific paths.
 - Clean generated artifacts (`clean.py`).
-- Skeleton-specific report constraints, such as: never hardcode numbers; load
-  values and figures from `3_analyses/*/results.json` using `helpers.py`.
+- Skeleton-specific report constraints: when invoking `render-quarto`, copy
+  `skeleton/templates/helpers.py` into the deliverable folder, wire the `.qmd`
+  to load values and figures from `3_analyses/*/results.json`, and ensure no
+  numbers are hardcoded.
 - Data collection and provenance: document raw files in `1_data/original/` using
   `document_sources.py`, invoked by the orchestrator with skeleton-specific paths.
 - Planning: a two-step, conversational process to fill `0_plan/plan.md` from the
@@ -72,9 +75,9 @@ The template acts as an output checklist, not as an interview script.
 
 Create and render Quarto deliverables from built-in templates.
 
-The skill owns the deliverable templates and the general/type-specific guidance
-for populating them. It can be invoked in any project, whether or not that
-project follows the data-analysis skeleton.
+The skill owns generic deliverable templates (`.qmd`, `.tex`, `.css`, images)
+and guidance for populating them. It is agnostic of the data-analysis skeleton
+and can be invoked in any project.
 
 ```bash
 render-quarto --type report --out-dir my_report
@@ -104,9 +107,9 @@ Templates and guidance:
   ask for confirmation).
 - Type-specific guidance applies to one template (e.g., label appendices A, B,
   C and reference them in a regular chapter; create one `.qmd` per chapter).
-- The skill is agnostic of the skeleton. Skeleton-specific rules live in the
-  orchestrator and are enforced by the agent when the orchestrator invokes this
-  skill.
+- The templates contain no analysis-specific logic. When the skeleton
+  orchestrator invokes this skill, it combines the generic templates with the
+  skeleton's `helpers.py` and enforces skeleton-specific report constraints.
 
 Outputs:
 - `out-dir/*.qmd` and supporting files.
@@ -114,7 +117,7 @@ Outputs:
 
 ### 2. `build-duckdb`
 
-Run a user-provided build script and validate the resulting DuckDB database.
+Build and validate a DuckDB database from raw data files.
 
 ```bash
 build-duckdb --script 2_db/build_db.py --db-dir 2_db
@@ -126,7 +129,11 @@ Inputs:
 - `--no-schema-doc` (optional): skip generating `schema.md`.
 
 Behavior:
-- Run the script.
+- Copy a built-in `build_db.py` template into `--db-dir` only if `--script` does
+  not already exist. Never overwrite an existing build script.
+- The assistant generates the database build logic from the available data
+  files and `plan.md`.
+- Run the generated script automatically.
 - Find the single `.duckdb` file in `--db-dir`.
 - Validate the database exists and has tables.
 - Generate or update `schema.md` in `--db-dir` by default.
@@ -179,14 +186,16 @@ Scaffold and run a data transformation from instructions.
 
 ```bash
 transform-data \
-  --input "path/to/file1.csv path/to/file2.json path/to/pdfs/" \
+  --input path/to/file1.csv \
+  --input path/to/file2.json \
+  --input path/to/pdfs/ \
   --instructions instructions.md \
   --out-dir 1_data/transformed/classify
 ```
 
 Inputs:
-- `--input`: a single flag containing a space-separated list of input files and/or
-  directories.
+- `--input`: one or more input files and/or directories. Repeat the flag for each
+  path.
 - `--instructions`: path to a markdown file describing the transformation.
 - `--out-dir`: directory where `run.py` and output files are written.
 
@@ -218,7 +227,7 @@ Outputs:
 ## Shared module: `llm_batch`
 
 `llm_batch` is a shared Python module for structured LLM batch calls. It is not
-a skill. Generated `run.py` scripts from `run-analysis` and `transform-data` can
+a skill. Generated `run.py` scripts from `run-analysis` and `transform-data`
 import it.
 
 The module provides:
@@ -226,8 +235,11 @@ The module provides:
 - Retry logic.
 - Support for multiple providers (RCP, OpenAI, ...).
 
-Location: `skills_v2/llm_batch/` (will become its own package when `skills_v2`
-is extracted to a repo).
+Location: `skills_v2/llm_batch/`. The skill catalog root contains a
+`pyproject.toml` that packages `llm_batch` so it can be installed into project
+virtual environments. `init.py` installs it in editable mode into the project
+`.venv`; standalone skills invoked outside a skeleton project ensure it is
+available before running generated scripts.
 
 ## Physical layout
 
@@ -246,6 +258,7 @@ skills_v2/
     clean.py
     templates/
       init/
+      helpers.py
       report/
       slides/
       dashboard/
@@ -261,6 +274,8 @@ skills_v2/
   build-duckdb/           # standalone
     SKILL.md
     build_duckdb.py
+    templates/
+      build_db.py
   run-analysis/           # standalone
     SKILL.md
     run_analysis.py
@@ -281,10 +296,6 @@ skills_v2/
 Each skill is self-contained and carries its own templates. Shared code lives in
 `llm_batch/`. The catalog is installable as a Python package via `pyproject.toml`
 so generated scripts can `import llm_batch`.
-
-## Open questions
-
-None at this point. All major design decisions are settled.
 
 ## Migration approach
 
