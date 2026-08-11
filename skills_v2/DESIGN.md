@@ -34,10 +34,10 @@ The orchestrator (`skeleton`) keeps skeleton-specific responsibilities:
 - Decide the next pipeline step and invoke the appropriate standalone skill with
   skeleton-specific paths.
 - Clean generated artifacts (`clean.py`).
-- Skeleton-specific report constraints: when invoking `render-quarto`, wire the
-  `.qmd` to import `skeleton_helpers.loaders` (typically via a generated
-  `4_output/helpers.py` wrapper) and load values and figures from
-  `3_analyses/*/results.json`, ensuring no numbers are hardcoded.
+- Skeleton-specific report constraints: when invoking `render-quarto`, edit the
+  generated `.qmd` files to import `skeleton_helpers.loaders` directly and load
+  values and figures from `3_analyses/*/results.json`, ensuring no numbers are
+  hardcoded.
 - Data collection and provenance: document raw files in `1_data/original/` using
   `document_sources.py`, invoked by the orchestrator with skeleton-specific paths.
 - Planning: a two-step, conversational process to fill `0_plan/plan.md` using
@@ -117,9 +117,9 @@ Templates and guidance:
 - Type-specific guidance applies to one template (e.g., label appendices A, B,
   C and reference them in a regular chapter; create one `.qmd` per chapter).
 - The templates contain no analysis-specific logic. When the skeleton
-  orchestrator invokes this skill, it combines the generic templates with
-  `skeleton_helpers.loaders` (typically via a generated `4_output/helpers.py`
-  wrapper) and enforces skeleton-specific report constraints.
+  orchestrator invokes this skill, it edits the generated `.qmd` files to
+  import `skeleton_helpers.loaders` directly and enforces skeleton-specific
+  report constraints.
 
 Outputs:
 - With `--create`: `out-dir/_quarto.yml`, `out-dir/*.qmd`, and supporting files.
