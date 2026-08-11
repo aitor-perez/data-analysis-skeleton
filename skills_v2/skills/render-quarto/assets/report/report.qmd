@@ -1,0 +1,100 @@
+---
+title: "Report Title"
+subtitle: "Subtitle"
+author: "Author Name"
+date: today
+date-format: "D MMMM YYYY"
+lang: en
+---
+
+<!-- Disclaimer: adapt the items below to your project. Remove if not needed. -->
+\begin{disclaimerbox}[Disclaimer]
+\small
+\begin{itemize}[leftmargin=1.5em, itemsep=4pt, topsep=2pt]
+\item \textbf{Data source.} \textit{Describe the data and its limitations.}
+\item \textbf{AI-assisted.} \textit{If applicable, describe how AI was used and what safeguards were applied.}
+\item \textbf{Methodological choices.} \textit{Flag key analytical choices that affect interpretation.}
+\item \textbf{Scope and intent.} \textit{Clarify what this report is and is not.}
+\end{itemize}
+\end{disclaimerbox}
+
+\newpage
+
+# Executive Summary {.unnumbered}
+
+_Brief overview of the project and its main findings._
+
+\begin{tcolorbox}[reportbox, title=Key Findings]
+\textit{Summarize the most important results here.}
+\end{tcolorbox}
+
+\newpage
+
+# Introduction
+
+_Describe the context and objectives of the analysis._
+
+# Methodology
+
+## Data
+
+```{python}
+#| echo: false
+# Example: load an analysis
+# data = load_analysis("example_analysis")
+# print(f"The dataset contains {data['n_results']} records.")
+```
+
+_Describe the data sources and any relevant characteristics of the corpus._
+
+## Approach
+
+_Describe the analytical approach, tools, and any theoretical framework._
+
+# Results
+
+_Present the findings. Remember: never hardcode numbers, load from JSON._
+
+```{python}
+#| echo: false
+# Example: use data in text
+# data = load_analysis("example_analysis")
+# for row in data["results"]:
+#     print(f"- {row['col1']}: {row['col2']}")
+```
+
+<!-- Example: quoting a source document -->
+<!-- \begin{docquote} -->
+<!-- \emph{``Quoted text from a source document.''}\\[2pt] -->
+<!-- {\small -- Document Name (Year)} \hfill {\small \textcolor{midgray}{Category:} \textbf{Label}} -->
+<!-- \end{docquote} -->
+
+# Discussion
+
+_Interpret the results. What do they mean? What are the implications?_
+
+# Conclusion
+
+_Summarize the key findings and next steps._
+
+\newpage
+
+# Appendix: Full Data Table {.unnumbered}
+
+_Move detailed or large tables here. Reference them from the main text with_ `\mbox{Table~\ref{tab:label}}`.
+
+<!-- Example table with booktabs -->
+<!-- \begin{table}[H] -->
+<!-- \centering -->
+<!-- \caption{Description of the table} -->
+<!-- \label{tab:label} -->
+<!-- \small -->
+<!-- \begin{tabular}{lrr} -->
+<!-- \toprule -->
+<!-- \textbf{Column A} & \textbf{Column B} & \textbf{Column C} \\ -->
+<!-- \midrule -->
+<!-- Row 1 & 123 & 45.6 \\ -->
+<!-- Row 2 & 789 & 12.3 \\ -->
+<!-- \bottomrule -->
+<!-- \end{tabular} -->
+<!-- \end{table} -->

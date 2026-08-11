@@ -1,0 +1,319 @@
+/* =============================================================================
+   Dashboard Theme — modern design with indigo accents
+   Inter font · soft tinted surfaces · clean card layout
+   ============================================================================= */
+
+/*-- scss:defaults --*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Override Bootstrap theme colors so bg-primary/secondary/etc. are neutral */
+$primary:   #FFFFFF;
+$secondary: #FFFFFF;
+$success:   #FFFFFF;
+$warning:   #FFFFFF;
+$danger:    #FFFFFF;
+
+/*-- scss:rules --*/
+
+:root {
+  /* Core palette — warm slate base */
+  --text-primary:   #1E293B;
+  --text-secondary: #475569;
+  --text-muted:     #94A3B8;
+  --border:         #E2E8F0;
+  --surface:        #F8FAFC;
+  --surface-alt:    #F1F5F9;
+  --white:          #FFFFFF;
+
+  /* Accent — indigo */
+  --accent:         #6366F1;
+  --accent-light:   #EEF2FF;
+
+  /* Value box palette */
+  --vb-blue:        #3B82F6;
+  --vb-blue-bg:     #EFF6FF;
+  --vb-purple:      #8B5CF6;
+  --vb-purple-bg:   #F5F3FF;
+  --vb-emerald:     #10B981;
+  --vb-emerald-bg:  #ECFDF5;
+  --vb-amber:       #F59E0B;
+  --vb-amber-bg:    #FFFBEB;
+  --vb-rose:        #F43F5E;
+  --vb-rose-bg:     #FFF1F2;
+
+  /* Disclaimer */
+  --disclaimer-bg:    #FFFBEB;
+  --disclaimer-bar:   #F59E0B;
+  --disclaimer-title: #78350F;
+}
+
+/* ---------------------------------------------------------------------------
+   Base typography
+   --------------------------------------------------------------------------- */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  color: var(--text-primary);
+  background-color: var(--surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------------------------------------------------------------------------
+   Navbar — deep indigo, modern
+   --------------------------------------------------------------------------- */
+.navbar {
+  background-color: #1E1B4B !important;
+  border-bottom: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+  padding: 0.6rem 1.5rem !important;
+}
+
+.navbar-brand,
+.navbar .navbar-brand {
+  color: var(--white) !important;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.65) !important;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  transition: color 0.15s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--white) !important;
+}
+
+.navbar-nav .nav-link.active {
+  border-bottom: 2px solid var(--white);
+}
+
+/* ---------------------------------------------------------------------------
+   Page / dashboard layout
+   --------------------------------------------------------------------------- */
+.dashboard-page {
+  padding: 1.2rem;
+}
+
+.quarto-dashboard .dashboard-content {
+  background-color: var(--surface);
+}
+
+/* ---------------------------------------------------------------------------
+   Cards — clean with subtle shadow
+   --------------------------------------------------------------------------- */
+.card {
+  background-color: var(--white);
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-header {
+  background-color: var(--white) !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 0.75rem 1rem !important;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.card-body {
+  padding: 1rem 1.2rem !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Value boxes — clean white cards, dark accent bar
+   Classes .card, .valuebox, .bg-* are all on the SAME element.
+   --------------------------------------------------------------------------- */
+.card.valuebox {
+  border-radius: 10px !important;
+  border: 1px solid var(--border) !important;
+  border-left: 4px solid var(--text-primary) !important;
+  background-color: var(--white) !important;
+}
+
+.card.valuebox .value-box-value {
+  font-size: 2.4rem !important;
+  font-weight: 700;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.03em;
+}
+
+.card.valuebox .value-box-title {
+  font-size: 0.75rem !important;
+  font-weight: 600;
+  color: var(--text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Bslib value boxes (Quarto 1.4+) */
+.bslib-value-box .value-box-showcase .bi {
+  color: var(--text-muted) !important;
+  font-size: 2.5rem;
+}
+
+.bslib-value-box .value-box-area {
+  padding: 0.8rem 1rem !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Tables — clean with accent header
+   --------------------------------------------------------------------------- */
+.card table,
+.dashboard-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.card table thead th {
+  border-top: none;
+  border-bottom: 2px solid var(--accent);
+  padding: 0.55rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.card table tbody td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.card table tbody tr:last-child td {
+  border-bottom: 1px solid var(--border);
+}
+
+.card table tbody tr:hover {
+  background-color: var(--accent-light);
+}
+
+/* ---------------------------------------------------------------------------
+   Figures / plots
+   --------------------------------------------------------------------------- */
+.card img,
+.card .plot-container {
+  max-width: 100%;
+  height: auto;
+}
+
+.card .cell-output-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ---------------------------------------------------------------------------
+   Sidebar (if used for navigation)
+   --------------------------------------------------------------------------- */
+.dashboard-sidebar {
+  background-color: var(--white) !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Disclaimer box (amber tinted)
+   --------------------------------------------------------------------------- */
+.disclaimer-box {
+  background-color: var(--disclaimer-bg);
+  border-left: 4px solid var(--disclaimer-bar);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--disclaimer-title);
+  line-height: 1.5;
+}
+
+.disclaimer-box strong {
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+   Scrollbar styling (subtle)
+   --------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Tabset panels (page tabs)
+   --------------------------------------------------------------------------- */
+.nav-tabs {
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.nav-tabs .nav-link {
+  color: var(--text-muted) !important;
+  font-size: 0.82rem;
+  font-weight: 500;
+  border: none !important;
+  padding: 0.5rem 1rem;
+  transition: color 0.15s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--text-secondary) !important;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--accent) !important;
+  border-bottom: 2px solid var(--accent) !important;
+  background-color: transparent !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------------- */
+.quarto-dashboard .dashboard-footer {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive adjustments
+   --------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .card.valuebox .value-box-value {
+    font-size: 1.6rem !important;
+  }
+
+  .card-header {
+    font-size: 0.75rem;
+  }
+}

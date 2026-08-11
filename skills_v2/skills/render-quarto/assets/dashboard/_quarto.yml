@@ -1,0 +1,15 @@
+project:
+  type: default
+  output-dir: .
+
+plotly:
+  connected: true
+
+format:
+  dashboard:
+    theme: [default, ./style.css]
+    orientation: rows
+    nav-buttons:
+      - icon: github
+        href: https://github.com/
+    logo: epfl_logo.png

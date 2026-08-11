@@ -1,0 +1,31 @@
+project:
+  type: default
+  output-dir: .
+
+format:
+  pdf:
+    output-file: "report.pdf"
+    documentclass: article
+    papersize: a4
+    fontsize: 11pt
+    pdf-engine: lualatex
+    geometry:
+      - top=25mm
+      - bottom=25mm
+      - left=25mm
+      - right=25mm
+    include-in-header:
+      - ./preamble.tex
+    include-before-body:
+      - ./titlepage.tex
+    header-includes:
+      - \graphicspath{{./}}
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    colorlinks: true
+    linkcolor: linkblue
+    urlcolor: linkblue
+    citecolor: linkblue
+    fig-pos: "H"
+    keep-tex: true

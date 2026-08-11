@@ -1,0 +1,225 @@
+% =============================================================================
+%  Slides Preamble — modern, minimal Beamer customization
+%  Clean grayscale design with generous whitespace and editorial layout.
+%  Reference via include-in-header in the Quarto YAML.
+% =============================================================================
+
+% ---------------------------------------------------------------------------
+%  Packages
+% ---------------------------------------------------------------------------
+\usepackage{tikz}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage{booktabs}
+
+% ---------------------------------------------------------------------------
+%  Fonts — Helvetica Neue, crisp and modern
+% ---------------------------------------------------------------------------
+\setsansfont[
+  Scale=0.92,
+  BoldFont={Helvetica Neue Bold},
+  ItalicFont={Helvetica Neue Italic},
+  BoldItalicFont={Helvetica Neue Bold Italic},
+  FontFace={l}{n}{Helvetica Neue Light},
+]{Helvetica Neue}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Light font command for subtitles and secondary text
+\newcommand{\lightfont}{\fontseries{l}\selectfont}
+
+% ---------------------------------------------------------------------------
+%  Colors — pure grayscale palette
+% ---------------------------------------------------------------------------
+\definecolor{cleanblack}{HTML}{1A1A1A}
+\definecolor{cleandark}{HTML}{333333}
+\definecolor{cleanmid}{HTML}{999999}
+\definecolor{cleanlight}{HTML}{D0D0D0}
+\definecolor{cleanpale}{HTML}{F2F2F2}
+\definecolor{cleanfaint}{HTML}{F8F8F8}
+\definecolor{epflred}{HTML}{FF0000}
+
+\setbeamercolor{normal text}{fg=cleanblack, bg=white}
+\setbeamercolor{alerted text}{fg=epflred}
+\setbeamercolor{structure}{fg=cleandark}
+
+\setbeamercolor{frametitle}{fg=cleanblack, bg=white}
+\setbeamercolor{framesubtitle}{fg=cleanmid}
+
+\setbeamercolor{title}{fg=cleanblack}
+\setbeamercolor{subtitle}{fg=cleanmid}
+\setbeamercolor{author}{fg=cleandark}
+\setbeamercolor{institute}{fg=cleanmid}
+\setbeamercolor{date}{fg=cleanmid}
+
+\setbeamercolor{block title}{fg=cleanblack, bg=cleanpale}
+\setbeamercolor{block body}{fg=cleandark, bg=cleanfaint}
+
+\setbeamercolor{item}{fg=cleandark}
+\setbeamercolor{subitem}{fg=cleanmid}
+
+\setbeamercolor{footnote}{fg=cleanmid}
+\setbeamercolor{page number in head/foot}{fg=cleanlight}
+
+% ---------------------------------------------------------------------------
+%  Beamer fonts
+% ---------------------------------------------------------------------------
+\setbeamerfont{title}{size=\LARGE, series=\bfseries}
+\setbeamerfont{subtitle}{size=\normalsize}
+\setbeamerfont{author}{size=\small}
+\setbeamerfont{institute}{size=\small}
+\setbeamerfont{date}{size=\small}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small}
+\setbeamerfont{footnote}{size=\tiny}
+\setbeamerfont{page number in head/foot}{size=\scriptsize}
+
+% ---------------------------------------------------------------------------
+%  Remove all default Beamer chrome
+% ---------------------------------------------------------------------------
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+% Itemize: minimal circle bullets
+\setbeamertemplate{itemize item}{\textcolor{cleanmid}{\raisebox{0.22ex}{\tiny$\bullet$}}}
+\setbeamertemplate{itemize subitem}{\textcolor{cleanlight}{\raisebox{0.22ex}{\scalebox{0.6}{\tiny$\bullet$}}}}
+\setbeamertemplate{itemize subsubitem}{\textcolor{cleanlight}{\raisebox{0.22ex}{\scalebox{0.6}{\tiny$\bullet$}}}}
+
+% Wider item separation for breathing room
+\setlength{\itemsep}{6pt plus 2pt minus 1pt}
+
+% Enumerate: simple numbers
+\setbeamertemplate{enumerate items}[default]
+
+% ---------------------------------------------------------------------------
+%  Footline — subtle page number, right-aligned
+% ---------------------------------------------------------------------------
+\setbeamertemplate{footline}{%
+  \hfill%
+  \usebeamerfont{page number in head/foot}%
+  \usebeamercolor[fg]{page number in head/foot}%
+  \insertframenumber\kern1.5em\vskip0.9em%
+}
+
+% ---------------------------------------------------------------------------
+%  Frame title — bold text, generous whitespace, no rule
+% ---------------------------------------------------------------------------
+\setbeamertemplate{frametitle}{%
+  \vskip0.8em%
+  \usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle%
+  \ifx\insertframesubtitle\@empty\else
+    \\[0.2em]%
+    \usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle%
+  \fi
+  \vskip0.6em%
+}
+
+% ---------------------------------------------------------------------------
+%  Title page — editorial layout with right-side accent panel
+% ---------------------------------------------------------------------------
+% Logo resolved via \graphicspath set in the .qmd's header-includes.
+\newcommand{\slidelogopath}{epfl_logo.png}
+
+\setbeamertemplate{title page}{%
+  % Background: light gray panel on the right
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[cleanpale]
+      ([xshift=0.62\paperwidth]current page.south west) rectangle
+      (current page.north east);
+  \end{tikzpicture}%
+  %
+  % EPFL logo — top left
+  \vskip0.3cm%
+  \hspace{0.5cm}\includegraphics[width=2.6cm]{\slidelogopath}%
+  %
+  \vskip1.4cm%
+  %
+  % Title and subtitle — left-aligned in the left 55%
+  \hspace{0.5cm}%
+  \begin{minipage}[t]{0.52\paperwidth}
+    \raggedright
+    \usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par%
+    \vskip0.5cm%
+    {\lightfont\usebeamercolor[fg]{subtitle}\insertsubtitle\par}%
+  \end{minipage}%
+  %
+  \vfill%
+  %
+  % Author block — bottom left
+  \hspace{0.5cm}%
+  \begin{minipage}[b]{0.52\paperwidth}
+    \raggedright
+    \usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par%
+    \vskip0.15cm%
+    {\lightfont\usebeamercolor[fg]{institute}\insertinstitute\par}%
+    \vskip0.3cm%
+    {\lightfont\usebeamercolor[fg]{date}\insertdate\par}%
+  \end{minipage}%
+  \vskip0.8cm%
+}
+
+% Suppress page number on the title frame
+\makeatletter
+\def\ps@titlepage{\setbeamertemplate{footline}{}}
+\addtobeamertemplate{title page}{\thispagestyle{titlepage}}{}
+\makeatother
+
+% ---------------------------------------------------------------------------
+%  Section page — large centered section name, clean and spacious
+% ---------------------------------------------------------------------------
+\AtBeginSection[]{%
+  \begin{frame}[plain,noframenumbering]
+    \vfill%
+    \begin{center}
+      {\LARGE\bfseries\color{cleanblack}\insertsectionhead\par}%
+    \end{center}
+    \vfill%
+  \end{frame}
+}
+
+% ---------------------------------------------------------------------------
+%  Disclaimer box (amber/orange) — flag caveats about data, AI, methodology.
+%  Mirrors the report disclaimerbox but sized for slides.
+%  Usage: \begin{disclaimerbox}[Disclaimer]
+% ---------------------------------------------------------------------------
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+\definecolor{disclaimerbg}{HTML}{FFF8E1}
+\definecolor{disclaimerbar}{HTML}{F0A830}
+\definecolor{disclaimertitle}{HTML}{5D4037}
+
+\newtcolorbox{disclaimerbox}[1][]{
+  enhanced,
+  colback=disclaimerbg,
+  colframe=disclaimerbg,
+  borderline west={3pt}{0pt}{disclaimerbar},
+  arc=0pt,
+  boxrule=0.4pt,
+  colbacktitle=disclaimerbg,
+  coltitle=disclaimertitle,
+  fonttitle=\bfseries\small,
+  toptitle=4pt,
+  bottomtitle=3pt,
+  top=4pt, bottom=6pt, left=8pt, right=8pt,
+  before skip=0.6em,
+  after skip=0.6em,
+  title={#1},
+}
+
+% ---------------------------------------------------------------------------
+%  Block environments — flat, borderless
+% ---------------------------------------------------------------------------
+\setbeamertemplate{block begin}{%
+  \vskip0.5em%
+  {\usebeamerfont{block title}\usebeamercolor[fg]{block title}\insertblocktitle}\par%
+  \vskip0.3em%
+  \usebeamercolor[fg]{block body}%
+}
+\setbeamertemplate{block end}{\vskip0.5em}
+
+% ---------------------------------------------------------------------------
+%  Figure paths
+% ---------------------------------------------------------------------------
+% NOTE: \graphicspath is set per deliverable in the .qmd's header-includes,
+% so that paths resolve correctly from each subfolder.

@@ -1,0 +1,18 @@
+project:
+  type: default
+  output-dir: .
+
+format:
+  beamer:
+    theme: default
+    colortheme: default
+    fontsize: 10pt
+    aspectratio: 169
+    pdf-engine: lualatex
+    section-titles: false
+    include-in-header:
+      - ./preamble.tex
+    header-includes:
+      - \graphicspath{{./}}
+    fig-pos: "H"
+    keep-tex: true
