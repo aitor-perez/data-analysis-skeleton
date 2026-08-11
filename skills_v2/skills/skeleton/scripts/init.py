@@ -5,6 +5,7 @@
 #   python3 <path-to-catalog>/skills/skeleton/scripts/init.py --project-dir /path/to/project
 
 import argparse
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -60,7 +61,7 @@ for src_rel, dst_rel in FILES:
         print(f"  ⚠ skipped existing {dst_rel}", flush=True)
     else:
         dst.parent.mkdir(parents=True, exist_ok=True)
-        dst.write_text(src.read_text())
+        shutil.copy2(src, dst)
         print(f"  ✓ created {dst_rel}", flush=True)
 
 # Create .venv if it doesn't exist

@@ -12,9 +12,9 @@ Short description of this analysis project.
 
 1. Fill in `0_plan/plan.md`.
 2. Collect raw data in `1_data/original/` and document it in `1_data/original/sources.yaml`.
-3. Build the database: `python 2_db/build_db.py`
-4. Run analyses in `3_analyses/<name>/`.
-5. Render deliverables in `4_output/`.
+3. Build the database in `2_db/` using the `build-duckdb` skill.
+4. Run analyses in `3_analyses/<name>/` using the `run-analysis` skill.
+5. Render deliverables in `4_output/<name>/` using the `render-quarto` skill.
 
 ## Environment
 

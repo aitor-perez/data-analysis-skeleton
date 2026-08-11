@@ -25,7 +25,7 @@ python skills/run-analysis/scripts/run_analysis.py --db-dir 2_db --out-dir 3_ana
 
 ## Behavior
 
-- With `--create`: copy `assets/run.py` into `--out-dir/run.py` only if it does not already exist. Substitute `__DB_PATH__` with the absolute path of the database.
+- With `--create`: copy `assets/run.py` into `--out-dir/run.py` only if it does not already exist. The template contains commented placeholders that you must edit before running.
 - Without `--create`: require `run.py` in `--out-dir`, run it, and validate that `results.json` matches the expected schema.
 - Fail fast with a clear error if `schema.md` is missing, if there is not exactly one `.duckdb` file, or if validation fails.
 

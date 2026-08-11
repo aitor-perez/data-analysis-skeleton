@@ -21,5 +21,4 @@ __pycache__/
 !4_output/**/titlepage.tex
 # Keep template files
 !4_output/templates/**
-.cursorignore
 

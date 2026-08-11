@@ -144,8 +144,8 @@ Inputs:
 Behavior:
 - With `--create`: copy the built-in `build_db.py` template from
   `build-duckdb/assets/` into `--out-dir/build_db.py` only if it does not already
-  exist. Substitute `__DATA_DIR__` with the absolute path of `--data-dir`. Never
-  overwrite an existing build script.
+  exist. The template contains commented placeholders that you must edit before
+  running. Never overwrite an existing build script.
 - Without `--create`: require `build_db.py` in `--out-dir`, run it, and validate
   that exactly one `.duckdb` file and a non-empty `schema.md` were produced.
 - The agent edits the scaffolded `build_db.py` to import and transform data,
@@ -177,9 +177,9 @@ Behavior:
 - Fail fast with a clear error if `--db-dir` does not contain exactly one
   `.duckdb` file or a `schema.md`.
 - With `--create`: copy the built-in `run.py` template from `run-analysis/assets/`
-  into `--out-dir/run.py` only if it does not already exist. Substitute
-  `__DB_PATH__` with the absolute path of the database. Never overwrite an
-  existing `run.py`.
+  into `--out-dir/run.py` only if it does not already exist. The template
+  contains commented placeholders that you must edit before running. Never
+  overwrite an existing `run.py`.
 - Without `--create`: require `run.py` in `--out-dir`, run it, and validate
   `results.json` against the standard schema.
 - The agent edits the scaffolded `run.py` to answer the analysis question,
@@ -226,8 +226,8 @@ Inputs:
 Behavior:
 - With `--create`: copy the minimal `run.py` template from
   `transform-data/assets/` into `--out-dir/run.py` only if it does not already
-  exist. Substitute `__INPUT_PATHS__` and `__OUTPUT_DIR__` with absolute paths.
-  Never overwrite an existing `run.py`.
+  exist. The template contains commented placeholders that you must edit before
+  running. Never overwrite an existing `run.py`.
 - Without `--create`: require `run.py` in `--out-dir`, run it, and validate that
   at least one output file was produced.
 - The agent edits the scaffolded `run.py` to implement the transformation,
@@ -238,8 +238,11 @@ Template contents (minimal):
 ```python
 from pathlib import Path
 
-INPUT_PATHS = [...]        # filled by the skill
-OUTPUT_DIR = Path("...")   # filled by the skill
+# TODO: list the input files or directories for this transformation, then uncomment.
+# INPUT_PATHS = [Path("...")]
+
+# TODO: point OUTPUT_DIR at the directory where outputs should be written, then uncomment.
+# OUTPUT_DIR = Path("...")
 
 # Generated transformation code goes here.
 ```

@@ -5,6 +5,7 @@
 
 import argparse
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -107,7 +108,7 @@ if not sources_path.exists():
         print(f"✗ Template not found: {template_path}", file=sys.stderr)
         sys.exit(1)
     data_dir.mkdir(parents=True, exist_ok=True)
-    sources_path.write_text(template_path.read_text())
+    shutil.copy2(template_path, sources_path)
     print(f"✓ Created {sources_path} from template")
 
 entries, parse_issues = parse_sources_yaml(sources_path)

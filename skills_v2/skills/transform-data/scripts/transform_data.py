@@ -6,6 +6,7 @@
 #   python transform_data.py --input path/to/file.csv --out-dir 1_data/transformed/x
 
 import argparse
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -48,12 +49,6 @@ def has_output_files(out_dir: Path) -> bool:
     return False
 
 
-def format_input_paths(paths: list[Path]) -> str:
-    """Return a Python list-of-Paths literal for insertion into the template."""
-    lines = ",\n    ".join(f"Path({str(p.resolve())!r})" for p in paths)
-    return f"[\n    {lines}\n]"
-
-
 args = parse_args()
 inputs = [p.resolve() for p in args.input]
 out_dir = args.out_dir.resolve()
@@ -73,12 +68,7 @@ if args.create:
         fail(f"run script already exists: {run_script}")
     if not template_path.exists():
         fail(f"template not found: {template_path}")
-    template_text = (
-        template_path.read_text()
-        .replace("__INPUT_PATHS__", format_input_paths(inputs))
-        .replace("__OUTPUT_DIR__", str(out_dir))
-    )
-    run_script.write_text(template_text)
+    shutil.copy2(template_path, run_script)
     print(f"✓ Created {run_script}")
     sys.exit(0)
 

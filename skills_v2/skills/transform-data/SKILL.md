@@ -29,7 +29,7 @@ python skills/transform-data/scripts/transform_data.py \
 
 ## Behavior
 
-- With `--create`: copy `assets/run.py` into `--out-dir/run.py` only if it does not already exist. Substitute `__INPUT_PATHS__` and `__OUTPUT_DIR__` with absolute paths.
+- With `--create`: copy `assets/run.py` into `--out-dir/run.py` only if it does not already exist. The template contains commented placeholders that you must edit before running.
 - Without `--create`: require `run.py` in `--out-dir`, run it, and validate that at least one output file was produced.
 - Fail fast if any input path does not exist, or if no output files are produced.
 

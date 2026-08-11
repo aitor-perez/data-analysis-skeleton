@@ -7,6 +7,7 @@
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -103,8 +104,7 @@ if args.create:
         fail(f"run script already exists: {run_script}")
     if not template_path.exists():
         fail(f"template not found: {template_path}")
-    template_text = template_path.read_text().replace("__DB_PATH__", str(db_path))
-    run_script.write_text(template_text)
+    shutil.copy2(template_path, run_script)
     print(f"✓ Created {run_script}")
     sys.exit(0)
 

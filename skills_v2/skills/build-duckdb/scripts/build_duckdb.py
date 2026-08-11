@@ -7,6 +7,7 @@
 
 import argparse
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -57,8 +58,7 @@ if args.create:
         fail(f"build script already exists: {build_script}")
     if not template_path.exists():
         fail(f"template not found: {template_path}")
-    template_text = template_path.read_text().replace("__DATA_DIR__", str(data_dir))
-    build_script.write_text(template_text)
+    shutil.copy2(template_path, build_script)
     print(f"✓ Created {build_script}")
     sys.exit(0)
 

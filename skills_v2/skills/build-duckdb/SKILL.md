@@ -25,7 +25,7 @@ python skills/build-duckdb/scripts/build_duckdb.py --data-dir 1_data --out-dir 2
 
 ## Behavior
 
-- With `--create`: copy `assets/build_db.py` into `--out-dir/build_db.py` only if it does not already exist. Substitute `__DATA_DIR__` with the absolute path of `--data-dir`.
+- With `--create`: copy `assets/build_db.py` into `--out-dir/build_db.py` only if it does not already exist. The template contains commented placeholders that you must edit before running.
 - Without `--create`: require `build_db.py` in `--out-dir`, run it, and validate that exactly one `.duckdb` file and a non-empty `schema.md` were produced.
 - Fail fast with a clear error if `build_db.py` is missing and `--create` was not passed, or if validation fails.
 
