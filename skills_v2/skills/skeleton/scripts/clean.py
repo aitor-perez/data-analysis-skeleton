@@ -64,9 +64,6 @@ def collect_targets(project_dir):
         for d in output_dir.iterdir():
             if not d.is_dir():
                 continue
-            # Skip the shared helpers file
-            if d.name == "helpers.py":
-                continue
             # Find qmd stems so we only delete generated .tex files (e.g. report.tex)
             qmd_stems = {f.stem for f in d.glob("*.qmd")}
             for f in d.rglob("*"):

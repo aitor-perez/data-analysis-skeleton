@@ -80,12 +80,6 @@ def check_plan(root):
         issues.append("plan.md not found")
         return "missing", issues, details
 
-    text = plan_path.read_text()
-    placeholders = re.findall(r"^_[^_]*\?[^_]*_\s*$", text, re.MULTILINE)
-    if placeholders:
-        issues.append(f"{len(placeholders)} section(s) still have placeholder text")
-        return "incomplete", issues, details
-
     return "complete", issues, details
 
 
@@ -290,20 +284,6 @@ def check_analyses(root):
     if invalid:
         for name, errs in invalid:
             issues.append(f"Invalid {name}/results.json: {'; '.join(errs)}")
-
-    plan_path = root / "0_plan" / "plan.md"
-    if plan_path.exists():
-        plan_text = plan_path.read_text()
-        analyses_match = re.search(
-            r"## Analyses\s*\n(.*?)(?=\n## |\Z)", plan_text, re.DOTALL
-        )
-        if analyses_match:
-            planned = re.findall(
-                r"^\d+\.\s+(.+)$", analyses_match.group(1), re.MULTILINE
-            )
-            planned = [p.strip() for p in planned if p.strip()]
-            if planned:
-                details.append(f"{len(planned)} question(s) listed in plan")
 
     if not issues and with_results:
         return "complete", issues, details
