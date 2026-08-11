@@ -13,6 +13,9 @@ import pandas as pd
 from pydantic import BaseModel
 
 from skeleton_helpers.llm import call_llm, call_llm_batch
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ---------------------------------------------------------------------------
 # Configuration

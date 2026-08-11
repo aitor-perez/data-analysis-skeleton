@@ -7,7 +7,10 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from dotenv import load_dotenv
 from pathlib import Path
+
+load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
