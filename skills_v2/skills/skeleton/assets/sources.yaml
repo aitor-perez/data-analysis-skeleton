@@ -1,0 +1,27 @@
+# Data Sources
+# Document every raw data file collected from external sources.
+# Files in this folder are never modified after collection.
+
+# ── Actual data sources (add yours below) ─────────────────────
+[]
+
+# ── Example entries ───────────────────────────────────────────
+# - file: survey_results.csv
+#   origin: "EPFL internal survey platform"
+#   url: "https://example.com/export"
+#   accessed: 2026-01-15
+#   description: "Raw survey responses, 1200 respondents, 25 questions"
+#   format: CSV
+#   encoding: utf-8
+#   confidential: false
+#   notes: "Exported with all optional fields included"
+#
+# - file: mystery_data.xlsx
+#   origin: "Received from Jean Dupont via email"
+#   url: ""
+#   accessed: 2026-02-10
+#   description: "Sales figures Q4 2025, exact extraction method unknown"
+#   format: XLSX
+#   encoding: ""
+#   confidential: false
+#   notes: "Provenance uncertain -- verify with Jean before publishing"

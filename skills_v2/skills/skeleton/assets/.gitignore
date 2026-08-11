@@ -1,0 +1,25 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+
+.DS_Store
+
+# DuckDB (rebuilt from scripts)
+2_db/*.duckdb
+2_db/*.wal
+
+# Quarto build artifacts (PDFs are intentionally tracked)
+# Each deliverable subfolder in 4_output/ may produce .tex, .log, *_files/
+4_output/**/*.log
+4_output/**/*_files/
+# Quarto-generated intermediate .tex (matches .qmd stem) — but keep titlepage.tex
+4_output/**/*.tex
+!4_output/**/titlepage.tex
+# Keep template files
+!4_output/templates/**
+.cursorignore
+
