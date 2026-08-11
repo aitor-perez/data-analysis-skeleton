@@ -78,10 +78,10 @@ interview script.
 
 Create and render Quarto deliverables from built-in templates.
 
-The skill owns generic deliverable templates (`.qmd`, `.tex`, `.css`, images)
-and guidance for populating them. It is agnostic of the data-analysis skeleton
-and can be invoked in any project. Each template declares its output format in
-its `.qmd` YAML frontmatter.
+The skill owns generic deliverable templates (`.qmd`, `_quarto.yml`, `.tex`,
+`.css`, images) and guidance for populating them. It is agnostic of the
+data-analysis skeleton and can be invoked in any project. Each template declares
+its output format in `_quarto.yml` and/or its `.qmd` YAML frontmatter.
 
 ```bash
 render-quarto --create report --out-dir my_report
@@ -89,26 +89,28 @@ render-quarto --out-dir my_report
 ```
 
 Inputs:
-- `--out-dir`: directory containing or receiving the `.qmd` file. Always
+- `--out-dir`: directory containing or receiving the Quarto project. Always
   required.
 - `--create` (optional): template to instantiate (`report`,
   `slides`, `dashboard`, ...).
 
 Behavior:
 - If `--create` is passed, copy the chosen template into `--out-dir` only if the
-  target files do not already exist. Never overwrite an existing `.qmd` or
-  supporting file. The template's `.qmd` declares the output format in its YAML
-  frontmatter.
-- If `--create` is not passed, find exactly one `.qmd` in `--out-dir` and run
-  `quarto render`. The output format is determined by the `.qmd` frontmatter.
-- Fail fast with a clear error if `--create` is not passed and `--out-dir`
-  contains zero or multiple `.qmd` files.
+  target files do not already exist. Never overwrite an existing `_quarto.yml`,
+  `.qmd`, or supporting file. Every template ships a `_quarto.yml` project file
+  plus one or more `.qmd` files; output format and project structure are
+  declared in `_quarto.yml` and the `.qmd` frontmatter.
+- If `--create` is not passed, require a `_quarto.yml` in `--out-dir` and run
+  `quarto render <out-dir>` as a Quarto project.
+- Fail fast with a clear error if `--create` is not passed and `--out-dir` does
+  not contain `_quarto.yml`.
 - When creating from a template, propose a structure (chapters, sections,
   appendices) based on the template rules and any available context, then work
-  with the user to fill the `.qmd` files before rendering.
+  with the user to fill both `_quarto.yml` and the `.qmd` files before rendering.
 
 Templates and guidance:
-- Templates live in `render-quarto/assets/`.
+- Templates live in `render-quarto/assets/`. Every template is a Quarto project
+  and includes `_quarto.yml`.
 - General guidance applies to all templates (e.g., propose a chapter split and
   ask for confirmation).
 - Type-specific guidance applies to one template (e.g., label appendices A, B,
@@ -119,8 +121,8 @@ Templates and guidance:
   constraints.
 
 Outputs:
-- With `--create`: `out-dir/*.qmd` and supporting files.
-- Without `--create`: rendered output in the format declared by the `.qmd`.
+- With `--create`: `out-dir/_quarto.yml`, `out-dir/*.qmd`, and supporting files.
+- Without `--create`: rendered output in the format declared by the project.
 
 ### 2. `build-duckdb`
 
