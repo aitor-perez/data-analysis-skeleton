@@ -23,21 +23,21 @@ skeleton-aware orchestrator skill and several generic, reusable skills.
 
 The orchestrator (`skeleton`) keeps skeleton-specific responsibilities:
 
-- Initialize a new project (`init.py`): create directories, copy skeleton
-  templates, create `.venv`, and install the catalog Python package in editable
-  mode so generated scripts can import `llm_batch`.
+- Initialize a new project (`init.py`): create directories, generate scaffold
+  files (`.env.example`, `.gitignore`) only if they do not already exist, create
+  `.venv`, and install the catalog Python package in editable mode so generated
+  scripts can import `data_analysis_skills`.
 - Report pipeline state (`status.py`).
 - Decide the next pipeline step and invoke the appropriate standalone skill with
   skeleton-specific paths.
 - Clean generated artifacts (`clean.py`).
-- Skeleton-specific report constraints: when invoking `render-quarto`, copy
-  `skeleton/templates/helpers.py` into the deliverable folder, wire the `.qmd`
-  to load values and figures from `3_analyses/*/results.json`, and ensure no
-  numbers are hardcoded.
+- Skeleton-specific report constraints: when invoking `render-quarto`, wire the
+  `.qmd` to import `data_analysis_skills.helpers` and load values and figures
+  from `3_analyses/*/results.json`, and ensure no numbers are hardcoded.
 - Data collection and provenance: document raw files in `1_data/original/` using
   `document_sources.py`, invoked by the orchestrator with skeleton-specific paths.
-- Planning: a two-step, conversational process to fill `0_plan/plan.md` from the
-  skeleton template.
+- Planning: a two-step, conversational process to fill `0_plan/plan.md` using
+  the checklist in `skeleton/SKILL.md`.
 
 ### Data collection and provenance
 
@@ -56,18 +56,18 @@ This keeps the orchestrator thin and makes it easy to promote
 
 ### Planning workflow
 
-Planning is a skeleton-specific responsibility because it uses the skeleton's
-`plan.md` template and section structure. The interaction is not a mechanical,
-question-by-question fill. Instead:
+Planning is a skeleton-specific responsibility. The interaction is not a
+mechanical, question-by-question fill. Instead:
 
 1. **Exploration**: The agent has a free-form conversation with the user to
    understand the project's goal, data, audience, risks, and desired outputs.
-2. **Proposal**: The agent writes a structured `0_plan/plan.md` from the skeleton
-   template, covering all required sections based on the conversation.
+2. **Proposal**: The agent writes a structured `0_plan/plan.md` covering all
+   sections from the planning checklist in `skeleton/SKILL.md`.
 3. **Review**: The user edits the proposal. The agent refines until the plan is
    complete.
 
-The template acts as an output checklist, not as an interview script.
+The checklist in `skeleton/SKILL.md` acts as an output checklist, not as an
+interview script.
 
 ## Standalone skills
 
@@ -102,14 +102,15 @@ Behavior when using `--input`:
 - Render the existing `.qmd` file to the requested format.
 
 Templates and guidance:
-- Templates live with the `render-quarto` skill.
+- Templates live in `render-quarto/assets/`.
 - General guidance applies to all templates (e.g., propose a chapter split and
   ask for confirmation).
 - Type-specific guidance applies to one template (e.g., label appendices A, B,
   C and reference them in a regular chapter; create one `.qmd` per chapter).
 - The templates contain no analysis-specific logic. When the skeleton
-  orchestrator invokes this skill, it combines the generic templates with the
-  skeleton's `helpers.py` and enforces skeleton-specific report constraints.
+  orchestrator invokes this skill, it combines the generic templates with
+  `data_analysis_skills.helpers` and enforces skeleton-specific report
+  constraints.
 
 Outputs:
 - `out-dir/*.qmd` and supporting files.
@@ -129,8 +130,9 @@ Inputs:
 - `--no-schema-doc` (optional): skip generating `schema.md`.
 
 Behavior:
-- Copy a built-in `build_db.py` template into `--db-dir` only if `--script` does
-  not already exist. Never overwrite an existing build script.
+- Copy the built-in `build_db.py` template from `build-duckdb/assets/` into
+  `--db-dir` only if `--script` does not already exist. Never overwrite an
+  existing build script.
 - The assistant generates the database build logic from the available data
   files and `plan.md`.
 - Run the generated script automatically.
@@ -160,8 +162,9 @@ Inputs:
   written.
 
 Behavior:
-- Copy a built-in, fixed `run.py` template into `--out-dir` only if `run.py` does
-  not already exist. Never overwrite an existing `run.py`.
+- Copy the built-in `run.py` template from `run-analysis/assets/` into
+  `--out-dir` only if `run.py` does not already exist. Never overwrite an
+  existing `run.py`.
 - The assistant uses the inferred database path, `schema.md`, and
   `instructions.md` to help the user write the analysis code inside the template.
 - Once the user confirms, run `run.py`.
@@ -200,8 +203,9 @@ Inputs:
 - `--out-dir`: directory where `run.py` and output files are written.
 
 Behavior:
-- Copy a minimal, generic `run.py` template into `--out-dir` only if `run.py`
-  does not already exist. Never overwrite an existing `run.py`.
+- Copy the minimal `run.py` template from `transform-data/assets/` into
+  `--out-dir` only if `run.py` does not already exist. Never overwrite an
+  existing `run.py`.
 - The assistant uses the provided input paths, output directory, and
   `instructions.md` to help the user write the transformation code inside the
   template.
@@ -224,22 +228,23 @@ Outputs:
 - `out-dir/run.py`
 - one or more output files in `out-dir`
 
-## Shared module: `llm_batch`
+## Shared Python package: `data_analysis_skills`
 
-`llm_batch` is a shared Python module for structured LLM batch calls. It is not
-a skill. Generated `run.py` scripts from `run-analysis` and `transform-data`
-import it.
+`data_analysis_skills` is a shared Python package installed into project virtual
+environments. It is not a skill. Generated `run.py` scripts import
+`data_analysis_skills.llm_batch` for structured LLM batch calls; Quarto
+deliverables import `data_analysis_skills.helpers` to load `results.json`.
 
-The module provides:
-- Structured output with Pydantic validation.
-- Retry logic.
-- Support for multiple providers (RCP, OpenAI, ...).
+The package provides:
+- `llm_batch`: structured LLM batch calls with Pydantic validation, retry logic,
+  and support for multiple providers (RCP, OpenAI, ...).
+- `helpers`: output helpers for loading analysis results into reports.
 
-Location: `skills_v2/llm_batch/`. The skill catalog root contains a
-`pyproject.toml` that packages `llm_batch` so it can be installed into project
-virtual environments. `init.py` installs it in editable mode into the project
-`.venv`; standalone skills invoked outside a skeleton project ensure it is
-available before running generated scripts.
+Location: `skills_v2/src/data_analysis_skills/`. The skill catalog root contains
+a `pyproject.toml` that packages `data_analysis_skills` so it can be installed
+into project virtual environments. `init.py` installs it in editable mode into
+the project `.venv`; standalone skills invoked outside a skeleton project ensure
+it is available before running generated scripts.
 
 ## Physical layout
 
@@ -249,53 +254,63 @@ available before running generated scripts.
 skills_v2/
   .opencode/
     plugins/
-      data-analysis.js   # plugin registration for OpenCode
-  skeleton/               # skeleton-aware orchestrator
-    SKILL.md
-    init.py
-    status.py
-    document_sources.py
-    clean.py
-    templates/
-      init/
+      data-analysis.js       # plugin registration for OpenCode
+  skills/                    # all skills
+    skeleton/                # skeleton-aware orchestrator
+      SKILL.md
+      scripts/
+        init.py
+        status.py
+        document_sources.py
+        clean.py
+      assets/
+      references/
+    render-quarto/           # standalone
+      SKILL.md
+      scripts/
+        render_quarto.py
+      assets/
+        report/
+        report-brief/
+        slides/
+        dashboard/
+        images/
+        css/
+      references/
+    build-duckdb/            # standalone
+      SKILL.md
+      scripts/
+        build_duckdb.py
+      assets/
+        build_db.py
+      references/
+    run-analysis/            # standalone
+      SKILL.md
+      scripts/
+        run_analysis.py
+      assets/
+        run.py
+      references/
+    transform-data/          # standalone
+      SKILL.md
+      scripts/
+        transform_data.py
+      assets/
+        run.py
+      references/
+  src/                       # shared Python package source
+    data_analysis_skills/
+      __init__.py
+      llm_batch.py
       helpers.py
-      report/
-      slides/
-      dashboard/
-      export/
-  render-quarto/          # standalone
-    SKILL.md
-    render_quarto.py
-    templates/
-      report/
-      report-brief/
-      slides/
-      dashboard/
-  build-duckdb/           # standalone
-    SKILL.md
-    build_duckdb.py
-    templates/
-      build_db.py
-  run-analysis/           # standalone
-    SKILL.md
-    run_analysis.py
-    templates/
-      run.py
-  transform-data/         # standalone
-    SKILL.md
-    transform_data.py
-    templates/
-      run.py
-  llm_batch/              # shared module
-    __init__.py
-    batch.py
   pyproject.toml
   requirements.txt
 ```
 
-Each skill is self-contained and carries its own templates. Shared code lives in
-`llm_batch/`. The catalog is installable as a Python package via `pyproject.toml`
-so generated scripts can `import llm_batch`.
+Each skill is self-contained and carries its own `scripts/`, `assets/`, and
+`references/`. Shared code lives in `src/data_analysis_skills/`. The catalog is
+installable as a Python package via `pyproject.toml` so generated scripts can
+`import data_analysis_skills`.
 
 ## Migration approach
 
