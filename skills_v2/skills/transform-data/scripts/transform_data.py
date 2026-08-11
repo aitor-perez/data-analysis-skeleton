@@ -40,10 +40,10 @@ def fail(message: str) -> None:
 
 
 def has_output_files(out_dir: Path) -> bool:
-    """Check if out_dir contains any output data files."""
+    """Check if out_dir or any subdirectory contains output data files."""
     skip = {"README.md", ".gitkeep", "run.py"}
-    for f in out_dir.iterdir():
-        if f.is_file() and f.name not in skip:
+    for f in out_dir.rglob("*"):
+        if f.is_file() and f.name not in skip and not f.name.startswith("."):
             return True
     return False
 
