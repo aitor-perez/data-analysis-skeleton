@@ -18,6 +18,9 @@ skeleton-aware orchestrator skill and several generic, reusable skills.
 - **Agent interaction is suggest-and-confirm.** Skills should propose content,
   structure, or next steps, and let the user approve or edit. They should not ask
   open-ended "what do you want?" questions unless there is no other way.
+- **Instructions are skill-specific.** Each skill that drafts an `instructions.md`
+  owns its own drafting guidance in its `SKILL.md`. There is no shared template
+  because the required content differs by skill.
 
 ## What stays in the orchestrator
 
@@ -77,32 +80,32 @@ Create and render Quarto deliverables from built-in templates.
 
 The skill owns generic deliverable templates (`.qmd`, `.tex`, `.css`, images)
 and guidance for populating them. It is agnostic of the data-analysis skeleton
-and can be invoked in any project.
+and can be invoked in any project. Each template declares its output format in
+its `.qmd` YAML frontmatter.
 
 ```bash
-render-quarto --type report --out-dir my_report
-render-quarto --type report-brief --out-dir 4_output/2026-08-06-brief
-render-quarto --input my_report/report.qmd --to pdf
+render-quarto --create report --out-dir my_report
+render-quarto --out-dir my_report
 ```
 
 Inputs:
-- `--type`: template to use (`report`, `report-brief`, `slides`, `dashboard`).
-- `--out-dir`: directory where the deliverable folder is created.
-- `--input` (optional): path to an existing `.qmd` file to render directly.
-- `--to` (optional, with `--input`): output format (`pdf`, `html`, ...).
+- `--out-dir`: directory containing or receiving the `.qmd` file. Always
+  required.
+- `--create` (optional): template to instantiate (`report`,
+  `slides`, `dashboard`, ...).
 
-`--type` and `--input` are mutually exclusive; passing both is an error.
-
-Behavior when using `--type`:
-- Copy the chosen template into `--out-dir` only if the target files do not
-  already exist. Never overwrite an existing `.qmd` or supporting file.
-- Propose a structure (chapters, sections, appendices) based on the template
-  rules and any available context.
-- Work with the user to fill the `.qmd` files.
-- Render when the user confirms.
-
-Behavior when using `--input`:
-- Render the existing `.qmd` file to the requested format.
+Behavior:
+- If `--create` is passed, copy the chosen template into `--out-dir` only if the
+  target files do not already exist. Never overwrite an existing `.qmd` or
+  supporting file. The template's `.qmd` declares the output format in its YAML
+  frontmatter.
+- If `--create` is not passed, find exactly one `.qmd` in `--out-dir` and run
+  `quarto render`. The output format is determined by the `.qmd` frontmatter.
+- Fail fast with a clear error if `--create` is not passed and `--out-dir`
+  contains zero or multiple `.qmd` files.
+- When creating from a template, propose a structure (chapters, sections,
+  appendices) based on the template rules and any available context, then work
+  with the user to fill the `.qmd` files before rendering.
 
 Templates and guidance:
 - Templates live in `render-quarto/assets/`.
@@ -116,8 +119,8 @@ Templates and guidance:
   constraints.
 
 Outputs:
-- `out-dir/*.qmd` and supporting files.
-- Rendered `.pdf` or `.html` files after user confirmation.
+- With `--create`: `out-dir/*.qmd` and supporting files.
+- Without `--create`: rendered output in the format declared by the `.qmd`.
 
 ### 2. `build-duckdb`
 
@@ -125,34 +128,36 @@ Build and validate a DuckDB database from raw data files.
 
 ```bash
 build-duckdb \
-  --script 2_db/build_db.py \
-  --db-dir 2_db \
-  --instructions instructions.md
+  --instructions instructions.md \
+  --data-dir 1_data \
+  --out-dir 2_db
 ```
 
 Inputs:
-- `--script`: path to the Python script that builds the database.
-- `--db-dir`: directory where the database and schema live.
 - `--instructions`: path to a markdown file describing the desired database
   structure, cleaning, joins, and any derived tables.
-- `--no-schema-doc` (optional): skip generating `schema.md`.
+- `--data-dir`: directory containing the raw data files to load into the
+  database.
+- `--out-dir`: directory where `build_db.py`, the `.duckdb` database, and
+  `schema.md` live.
 
 Behavior:
 - Copy the built-in `build_db.py` template from `build-duckdb/assets/` into
-  `--db-dir` only if `--script` does not already exist. Never overwrite an
+  `--out-dir/build_db.py` only if it does not already exist. Never overwrite an
   existing build script.
 - Draft `instructions.md` from the conversation if it does not already exist,
   present it to the user for review/edits, and only proceed once confirmed.
 - The assistant generates the database build logic from `instructions.md` and
-  the available data files.
+  the files in `--data-dir`.
 - Run the generated script automatically.
-- Find the single `.duckdb` file in `--db-dir`.
+- Find the single `.duckdb` file in `--out-dir`.
 - Validate the database exists and has tables.
-- Generate or update `schema.md` in `--db-dir` by default.
+- Always generate or update `schema.md` in `--out-dir`. The schema document is the
+  contract for downstream skills such as `run-analysis`.
 
 Outputs:
-- `<db-dir>/<name>.duckdb`
-- `<db-dir>/schema.md` (unless `--no-schema-doc` is passed)
+- `out-dir/<name>.duckdb`
+- `out-dir/schema.md`
 
 ### 3. `run-analysis`
 
@@ -160,14 +165,14 @@ Scaffold and run an analysis from instructions against a DuckDB database.
 
 ```bash
 run-analysis \
-  --db-dir 2_db \
   --instructions instructions.md \
+  --db-dir 2_db \
   --out-dir 3_analyses/q1
 ```
 
 Inputs:
-- `--db-dir`: directory containing exactly one `.duckdb` file and a `schema.md`.
 - `--instructions`: path to a markdown file describing the analysis.
+- `--db-dir`: directory containing exactly one `.duckdb` file and a `schema.md`.
 - `--out-dir`: directory where `run.py`, `results.json`, and `figures/` are
   written.
 
@@ -203,17 +208,17 @@ Scaffold and run a data transformation from instructions.
 
 ```bash
 transform-data \
+  --instructions instructions.md \
   --input path/to/file1.csv \
   --input path/to/file2.json \
   --input path/to/pdfs/ \
-  --instructions instructions.md \
   --out-dir 1_data/transformed/classify
 ```
 
 Inputs:
+- `--instructions`: path to a markdown file describing the transformation.
 - `--input`: one or more input files and/or directories. Repeat the flag for each
   path.
-- `--instructions`: path to a markdown file describing the transformation.
 - `--out-dir`: directory where `run.py` and output files are written.
 
 Behavior:
