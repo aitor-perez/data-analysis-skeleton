@@ -91,8 +91,11 @@ Inputs:
 - `--input` (optional): path to an existing `.qmd` file to render directly.
 - `--to` (optional, with `--input`): output format (`pdf`, `html`, ...).
 
+`--type` and `--input` are mutually exclusive; passing both is an error.
+
 Behavior when using `--type`:
-- Copy the chosen template into `--out-dir`.
+- Copy the chosen template into `--out-dir` only if the target files do not
+  already exist. Never overwrite an existing `.qmd` or supporting file.
 - Propose a structure (chapters, sections, appendices) based on the template
   rules and any available context.
 - Work with the user to fill the `.qmd` files.
@@ -121,20 +124,27 @@ Outputs:
 Build and validate a DuckDB database from raw data files.
 
 ```bash
-build-duckdb --script 2_db/build_db.py --db-dir 2_db
+build-duckdb \
+  --script 2_db/build_db.py \
+  --db-dir 2_db \
+  --instructions instructions.md
 ```
 
 Inputs:
 - `--script`: path to the Python script that builds the database.
 - `--db-dir`: directory where the database and schema live.
+- `--instructions`: path to a markdown file describing the desired database
+  structure, cleaning, joins, and any derived tables.
 - `--no-schema-doc` (optional): skip generating `schema.md`.
 
 Behavior:
 - Copy the built-in `build_db.py` template from `build-duckdb/assets/` into
   `--db-dir` only if `--script` does not already exist. Never overwrite an
   existing build script.
-- The assistant generates the database build logic from the available data
-  files and `plan.md`.
+- Draft `instructions.md` from the conversation if it does not already exist,
+  present it to the user for review/edits, and only proceed once confirmed.
+- The assistant generates the database build logic from `instructions.md` and
+  the available data files.
 - Run the generated script automatically.
 - Find the single `.duckdb` file in `--db-dir`.
 - Validate the database exists and has tables.
@@ -162,9 +172,13 @@ Inputs:
   written.
 
 Behavior:
+- Fail fast with a clear error if `--db-dir` does not contain exactly one
+  `.duckdb` file or a `schema.md`.
 - Copy the built-in `run.py` template from `run-analysis/assets/` into
   `--out-dir` only if `run.py` does not already exist. Never overwrite an
   existing `run.py`.
+- Draft `instructions.md` from the conversation if it does not already exist,
+  present it to the user for review/edits, and only proceed once confirmed.
 - The assistant uses the inferred database path, `schema.md`, and
   `instructions.md` to help the user write the analysis code inside the template.
 - Once the user confirms, run `run.py`.
@@ -206,6 +220,8 @@ Behavior:
 - Copy the minimal `run.py` template from `transform-data/assets/` into
   `--out-dir` only if `run.py` does not already exist. Never overwrite an
   existing `run.py`.
+- Draft `instructions.md` from the conversation if it does not already exist,
+  present it to the user for review/edits, and only proceed once confirmed.
 - The assistant uses the provided input paths, output directory, and
   `instructions.md` to help the user write the transformation code inside the
   template.
@@ -243,8 +259,12 @@ The package provides:
 Location: `skills_v2/src/data_analysis_skills/`. The skill catalog root contains
 a `pyproject.toml` that packages `data_analysis_skills` so it can be installed
 into project virtual environments. `init.py` installs it in editable mode into
-the project `.venv`; standalone skills invoked outside a skeleton project ensure
-it is available before running generated scripts.
+the project `.venv`.
+
+For standalone use outside a skeleton project, install the package once from the
+catalog root (`pip install -e .`). Each standalone skill checks that
+`data_analysis_skills` is importable before running generated scripts; if it is
+missing, the skill exits with a clear install instruction.
 
 ## Physical layout
 
