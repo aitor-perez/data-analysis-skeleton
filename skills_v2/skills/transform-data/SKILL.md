@@ -33,6 +33,17 @@ python skills/transform-data/scripts/transform_data.py \
 - Without `--create`: require `run.py` in `--out-dir`, run it, and validate that at least one output file was produced.
 - Fail fast if any input path does not exist, or if no output files are produced.
 
+## Generated script conventions
+
+When editing `run.py`, keep `INPUT_PATHS` and `OUTPUT_DIR` relative to the script's own directory so the project stays portable if moved. For example:
+
+```python
+INPUT_PATHS = [Path(__file__).resolve().parent / ".." / "input.csv"]
+OUTPUT_DIR = Path(__file__).resolve().parent
+```
+
+Avoid hardcoding absolute paths.
+
 ## When invoked by the skeleton
 
 Use `0_plan/plan.md` to understand the required enrichment. Scaffold with `--create`, edit `1_data/transformed/<name>/run.py`, then run the skill without `--create`.

@@ -29,6 +29,16 @@ python skills/run-analysis/scripts/run_analysis.py --db-dir 2_db --out-dir 3_ana
 - Without `--create`: require `run.py` in `--out-dir`, run it, and validate that `results.json` matches the expected schema.
 - Fail fast with a clear error if `schema.md` is missing, if there is not exactly one `.duckdb` file, or if validation fails.
 
+## Generated script conventions
+
+When editing `run.py`, keep paths relative to the script's own directory so the project stays portable if moved. For example:
+
+```python
+DB_PATH = Path(__file__).resolve().parent / ".." / "data.duckdb"
+```
+
+Avoid hardcoding absolute paths.
+
 ## When invoked by the skeleton
 
 Use `0_plan/plan.md` and `2_db/schema.md` to decide which question to answer. Scaffold with `--create`, edit `3_analyses/<name>/run.py`, then run the skill without `--create`.
