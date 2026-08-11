@@ -2,7 +2,7 @@
 # Run from this folder:
 #   python run.py
 
-import sys, duckdb, json
+import duckdb, json
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
@@ -11,8 +11,6 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 load_dotenv()
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 DB_PATH = Path("__DB_PATH__")
 Path("figures").mkdir(exist_ok=True)
