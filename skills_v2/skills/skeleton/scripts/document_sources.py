@@ -52,7 +52,7 @@ def collect_data_files(directory):
                 and not f.name.startswith(".")
                 and not f.suffix == ".py"
             ):
-                files.append(f.name)
+                files.append(f.relative_to(directory).as_posix())
     return files
 
 

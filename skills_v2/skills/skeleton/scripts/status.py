@@ -105,8 +105,8 @@ def parse_sources_yaml(path):
         return None
 
 
-def collect_data_files(directory, data_dir):
-    """Recursively collect data files, returning paths relative to 1_data/."""
+def collect_data_files(directory):
+    """Recursively collect data files, returning paths relative to the given directory."""
     skip = {"README.md", "sources.yaml", ".gitkeep"}
     files = []
     if directory.is_dir():
@@ -117,7 +117,7 @@ def collect_data_files(directory, data_dir):
                 and not f.name.startswith(".")
                 and not f.suffix == ".py"
             ):
-                files.append(str(f.relative_to(data_dir)))
+                files.append(f.relative_to(directory).as_posix())
     return files
 
 
@@ -130,8 +130,8 @@ def check_data(root):
     issues = []
     details = []
 
-    original_files = collect_data_files(original_dir, data_dir)
-    transformed_files = collect_data_files(transformed_dir, data_dir)
+    original_files = collect_data_files(original_dir)
+    transformed_files = collect_data_files(transformed_dir)
     all_data_files = original_files + transformed_files
 
     documented = []
@@ -148,12 +148,11 @@ def check_data(root):
         return "empty", issues, details
 
     if original_files:
-        names = [f.split("/", 1)[-1] for f in original_files]
-        details.append(f"{len(original_files)} original file(s): {', '.join(names)}")
+        details.append(f"{len(original_files)} original file(s): {', '.join(original_files)}")
     if transformed_files:
         details.append(f"{len(transformed_files)} transformed file(s)")
 
-    original_names = [f.split("/", 1)[-1] for f in original_files]
+    original_names = original_files
     undocumented = [f for f in original_names if f not in documented]
     missing_files = [f for f in documented if f not in original_names]
 
