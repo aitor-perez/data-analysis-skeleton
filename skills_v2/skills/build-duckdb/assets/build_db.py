@@ -7,7 +7,9 @@ import pandas as pd
 from pathlib import Path
 
 DB_PATH = Path(__file__).parent / "project.duckdb"
-DATA_DIR = Path("__DATA_DIR__")
+
+# TODO: point DATA_DIR at the directory containing your raw data files, then uncomment.
+# DATA_DIR = Path("...")
 
 # Remove old DB if it exists (clean rebuild)
 DB_PATH.unlink(missing_ok=True)

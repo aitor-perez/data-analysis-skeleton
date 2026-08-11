@@ -12,7 +12,9 @@ from pathlib import Path
 
 load_dotenv()
 
-DB_PATH = Path("__DB_PATH__")
+# TODO: point DB_PATH at your DuckDB database file, then uncomment.
+# DB_PATH = Path("...")
+
 Path("figures").mkdir(exist_ok=True)
 con = duckdb.connect(str(DB_PATH), read_only=True)
 

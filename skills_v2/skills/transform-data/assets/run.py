@@ -21,9 +21,12 @@ load_dotenv()
 # Configuration
 # ---------------------------------------------------------------------------
 
-INPUT_PATHS = __INPUT_PATHS__
-OUTPUT_DIR = Path("__OUTPUT_DIR__")
-OUTPUT_FILE = OUTPUT_DIR / "output.csv"
+# TODO: list the input files or directories for this transformation, then uncomment.
+# INPUT_PATHS = [Path("...")]
+
+# TODO: point OUTPUT_DIR at the directory where outputs should be written, then uncomment.
+# OUTPUT_DIR = Path("...")
+# OUTPUT_FILE = OUTPUT_DIR / "output.csv"
 
 # ---------------------------------------------------------------------------
 # Pydantic output schema
