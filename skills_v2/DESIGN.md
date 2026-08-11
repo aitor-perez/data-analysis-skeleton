@@ -18,9 +18,9 @@ skeleton-aware orchestrator skill and several generic, reusable skills.
 - **Agent interaction is suggest-and-confirm.** Skills should propose content,
   structure, or next steps, and let the user approve or edit. They should not ask
   open-ended "what do you want?" questions unless there is no other way.
-- **Instructions are skill-specific.** Each skill that drafts an `instructions.md`
-  owns its own drafting guidance in its `SKILL.md`. There is no shared template
-  because the required content differs by skill.
+- **Scaffold with `--create`, run without it.** Skills that generate code from
+  templates use an explicit `--create` flag to scaffold and run without it to
+  execute. This avoids stateful Makefile-like behavior.
 
 ## What stays in the orchestrator
 
@@ -29,14 +29,15 @@ The orchestrator (`skeleton`) keeps skeleton-specific responsibilities:
 - Initialize a new project (`init.py`): create directories, generate scaffold
   files (`.env.example`, `.gitignore`) only if they do not already exist, create
   `.venv`, and install the catalog Python package in editable mode so generated
-  scripts can import `data_analysis_skills`.
+  scripts can import `skeleton_helpers`.
 - Report pipeline state (`status.py`).
 - Decide the next pipeline step and invoke the appropriate standalone skill with
   skeleton-specific paths.
 - Clean generated artifacts (`clean.py`).
 - Skeleton-specific report constraints: when invoking `render-quarto`, wire the
-  `.qmd` to import `data_analysis_skills.helpers` and load values and figures
-  from `3_analyses/*/results.json`, and ensure no numbers are hardcoded.
+  `.qmd` to import `skeleton_helpers.loaders` (typically via a generated
+  `4_output/helpers.py` wrapper) and load values and figures from
+  `3_analyses/*/results.json`, ensuring no numbers are hardcoded.
 - Data collection and provenance: document raw files in `1_data/original/` using
   `document_sources.py`, invoked by the orchestrator with skeleton-specific paths.
 - Planning: a two-step, conversational process to fill `0_plan/plan.md` using
@@ -47,11 +48,11 @@ The orchestrator (`skeleton`) keeps skeleton-specific responsibilities:
 Collection is skeleton-specific because it targets the `1_data/original/`
 directory and the `sources.yaml` format. The implementation lives in the
 orchestrator as `skeleton/document_sources.py`, but it is written like a
-standalone skill: all inputs are CLI arguments and no skeleton paths are
-hard-coded inside it.
+standalone skill: it takes a single `--data-dir` argument and writes or validates
+`sources.yaml` inside that directory.
 
 ```bash
-skeleton/document_sources.py --input-dir 1_data/original --output 1_data/original/sources.yaml
+skeleton/document_sources.py --data-dir 1_data/original
 ```
 
 This keeps the orchestrator thin and makes it easy to promote
@@ -117,8 +118,8 @@ Templates and guidance:
   C and reference them in a regular chapter; create one `.qmd` per chapter).
 - The templates contain no analysis-specific logic. When the skeleton
   orchestrator invokes this skill, it combines the generic templates with
-  `data_analysis_skills.helpers` and enforces skeleton-specific report
-  constraints.
+  `skeleton_helpers.loaders` (typically via a generated `4_output/helpers.py`
+  wrapper) and enforces skeleton-specific report constraints.
 
 Outputs:
 - With `--create`: `out-dir/_quarto.yml`, `out-dir/*.qmd`, and supporting files.
@@ -129,67 +130,63 @@ Outputs:
 Build and validate a DuckDB database from raw data files.
 
 ```bash
-build-duckdb \
-  --instructions instructions.md \
-  --data-dir 1_data \
-  --out-dir 2_db
+build-duckdb --create --data-dir 1_data --out-dir 2_db
+build-duckdb --data-dir 1_data --out-dir 2_db
 ```
 
 Inputs:
-- `--instructions`: path to a markdown file describing the desired database
-  structure, cleaning, joins, and any derived tables.
 - `--data-dir`: directory containing the raw data files to load into the
   database.
 - `--out-dir`: directory where `build_db.py`, the `.duckdb` database, and
   `schema.md` live.
+- `--create`: copy the `build_db.py` template into `--out-dir` and exit.
 
 Behavior:
-- Copy the built-in `build_db.py` template from `build-duckdb/assets/` into
-  `--out-dir/build_db.py` only if it does not already exist. Never overwrite an
-  existing build script.
-- Draft `instructions.md` from the conversation if it does not already exist,
-  present it to the user for review/edits, and only proceed once confirmed.
-- The assistant generates the database build logic from `instructions.md` and
-  the files in `--data-dir`.
-- Run the generated script automatically.
-- Find the single `.duckdb` file in `--out-dir`.
-- Validate the database exists and has tables.
-- Always generate or update `schema.md` in `--out-dir`. The schema document is the
-  contract for downstream skills such as `run-analysis`.
+- With `--create`: copy the built-in `build_db.py` template from
+  `build-duckdb/assets/` into `--out-dir/build_db.py` only if it does not already
+  exist. Substitute `__DATA_DIR__` with the absolute path of `--data-dir`. Never
+  overwrite an existing build script.
+- Without `--create`: require `build_db.py` in `--out-dir`, run it, and validate
+  that exactly one `.duckdb` file and a non-empty `schema.md` were produced.
+- The agent edits the scaffolded `build_db.py` to import and transform data,
+  using `0_plan/plan.md` for guidance when running from the skeleton.
+- Fail fast with a clear error if `build_db.py` is missing and `--create` was not
+  passed, or if validation fails.
 
 Outputs:
+- `out-dir/build_db.py`
 - `out-dir/<name>.duckdb`
 - `out-dir/schema.md`
 
 ### 3. `run-analysis`
 
-Scaffold and run an analysis from instructions against a DuckDB database.
+Scaffold and run an analysis against a DuckDB database.
 
 ```bash
-run-analysis \
-  --instructions instructions.md \
-  --db-dir 2_db \
-  --out-dir 3_analyses/q1
+run-analysis --create --db-dir 2_db --out-dir 3_analyses/q1
+run-analysis --db-dir 2_db --out-dir 3_analyses/q1
 ```
 
 Inputs:
-- `--instructions`: path to a markdown file describing the analysis.
 - `--db-dir`: directory containing exactly one `.duckdb` file and a `schema.md`.
 - `--out-dir`: directory where `run.py`, `results.json`, and `figures/` are
   written.
+- `--create`: copy the `run.py` template into `--out-dir` and exit.
 
 Behavior:
 - Fail fast with a clear error if `--db-dir` does not contain exactly one
   `.duckdb` file or a `schema.md`.
-- Copy the built-in `run.py` template from `run-analysis/assets/` into
-  `--out-dir` only if `run.py` does not already exist. Never overwrite an
+- With `--create`: copy the built-in `run.py` template from `run-analysis/assets/`
+  into `--out-dir/run.py` only if it does not already exist. Substitute
+  `__DB_PATH__` with the absolute path of the database. Never overwrite an
   existing `run.py`.
-- Draft `instructions.md` from the conversation if it does not already exist,
-  present it to the user for review/edits, and only proceed once confirmed.
-- The assistant uses the inferred database path, `schema.md`, and
-  `instructions.md` to help the user write the analysis code inside the template.
-- Once the user confirms, run `run.py`.
-- Validate `results.json` against the standard schema.
+- Without `--create`: require `run.py` in `--out-dir`, run it, and validate
+  `results.json` against the standard schema.
+- The agent edits the scaffolded `run.py` to answer the analysis question,
+  using `0_plan/plan.md` and `schema.md` for guidance when running from the
+  skeleton.
+- Fail fast with a clear error if `run.py` is missing and `--create` was not
+  passed, or if validation fails.
 
 Outputs:
 - `out-dir/run.py`
@@ -206,34 +203,36 @@ Output schema (unchanged from current skeleton):
 
 ### 4. `transform-data`
 
-Scaffold and run a data transformation from instructions.
+Scaffold and run a data transformation or enrichment.
 
 ```bash
-transform-data \
-  --instructions instructions.md \
+transform-data --create \
   --input path/to/file1.csv \
   --input path/to/file2.json \
   --input path/to/pdfs/ \
   --out-dir 1_data/transformed/classify
+
+transform-data \
+  --input path/to/file1.csv \
+  --out-dir 1_data/transformed/classify
 ```
 
 Inputs:
-- `--instructions`: path to a markdown file describing the transformation.
 - `--input`: one or more input files and/or directories. Repeat the flag for each
   path.
 - `--out-dir`: directory where `run.py` and output files are written.
+- `--create`: copy the `run.py` template into `--out-dir` and exit.
 
 Behavior:
-- Copy the minimal `run.py` template from `transform-data/assets/` into
-  `--out-dir` only if `run.py` does not already exist. Never overwrite an
-  existing `run.py`.
-- Draft `instructions.md` from the conversation if it does not already exist,
-  present it to the user for review/edits, and only proceed once confirmed.
-- The assistant uses the provided input paths, output directory, and
-  `instructions.md` to help the user write the transformation code inside the
-  template.
-- Once the user confirms, run `run.py`.
-- Validate that `--out-dir` contains at least one output file; fail if it is empty.
+- With `--create`: copy the minimal `run.py` template from
+  `transform-data/assets/` into `--out-dir/run.py` only if it does not already
+  exist. Substitute `__INPUT_PATHS__` and `__OUTPUT_DIR__` with absolute paths.
+  Never overwrite an existing `run.py`.
+- Without `--create`: require `run.py` in `--out-dir`, run it, and validate that
+  at least one output file was produced.
+- The agent edits the scaffolded `run.py` to implement the transformation,
+  using `0_plan/plan.md` for guidance when running from the skeleton.
+- Fail fast if any input path does not exist, or if no output files are produced.
 
 Template contents (minimal):
 ```python
@@ -251,27 +250,26 @@ Outputs:
 - `out-dir/run.py`
 - one or more output files in `out-dir`
 
-## Shared Python package: `data_analysis_skills`
+## Shared Python package: `skeleton_helpers`
 
-`data_analysis_skills` is a shared Python package installed into project virtual
+`skeleton_helpers` is a shared Python package installed into project virtual
 environments. It is not a skill. Generated `run.py` scripts import
-`data_analysis_skills.llm_batch` for structured LLM batch calls; Quarto
-deliverables import `data_analysis_skills.helpers` to load `results.json`.
+`skeleton_helpers.llm` for structured LLM calls; Quarto deliverables import
+`skeleton_helpers.loaders` (typically through a skeleton-generated wrapper) to
+load `results.json`.
 
 The package provides:
-- `llm_batch`: structured LLM batch calls with Pydantic validation, retry logic,
-  and support for multiple providers (RCP, OpenAI, ...).
-- `helpers`: output helpers for loading analysis results into reports.
+- `llm`: structured single and batch LLM calls with Pydantic validation, retry
+  logic, and support for multiple providers (RCP, OpenAI, ...).
+- `loaders`: output helpers for loading analysis results into reports.
 
-Location: `skills_v2/src/data_analysis_skills/`. The skill catalog root contains
-a `pyproject.toml` that packages `data_analysis_skills` so it can be installed
-into project virtual environments. `init.py` installs it in editable mode into
-the project `.venv`.
+Location: `skills_v2/src/skeleton_helpers/`. The skill catalog root contains a
+`pyproject.toml` that packages `skeleton_helpers` so it can be installed into
+project virtual environments. `init.py` installs it in editable mode into the
+project `.venv`.
 
 For standalone use outside a skeleton project, install the package once from the
-catalog root (`pip install -e .`). Each standalone skill checks that
-`data_analysis_skills` is importable before running generated scripts; if it is
-missing, the skill exits with a clear install instruction.
+catalog root (`pip install -e .`).
 
 ## Physical layout
 
@@ -325,19 +323,19 @@ skills_v2/
       assets/
         run.py
       references/
-  src/                       # shared Python package source
-    data_analysis_skills/
-      __init__.py
-      llm_batch.py
-      helpers.py
+  README.md
   pyproject.toml
-  requirements.txt
+  src/                       # shared Python package source
+    skeleton_helpers/
+      __init__.py
+      llm.py
+      loaders.py
 ```
 
 Each skill is self-contained and carries its own `scripts/`, `assets/`, and
-`references/`. Shared code lives in `src/data_analysis_skills/`. The catalog is
+`references/`. Shared code lives in `src/skeleton_helpers/`. The catalog is
 installable as a Python package via `pyproject.toml` so generated scripts can
-`import data_analysis_skills`.
+`import skeleton_helpers`.
 
 ## Migration approach
 
