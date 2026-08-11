@@ -57,7 +57,16 @@ Use the earliest rule that matches:
 
 ## Skeleton-specific wiring
 
-When invoking `render-quarto`, the skeleton orchestrator must ensure the deliverable can load values and figures from `3_analyses/*/results.json`. The typical pattern is to generate a small `4_output/helpers.py` wrapper that imports from `skeleton_helpers.loaders` and sets `ANALYSES_DIR` to the project's `3_analyses` directory.
+When invoking `render-quarto`, the skeleton orchestrator must edit the generated `.qmd` files so the deliverable loads values and figures from `3_analyses/*/results.json` instead of hardcoding numbers. The typical pattern is to add a setup cell:
+
+```python
+from pathlib import Path
+from skeleton_helpers.loaders import load_analysis, load_value, load_figure
+
+ANALYSES_DIR = Path(__file__).resolve().parents[2] / "3_analyses"
+```
+
+and then use `load_analysis("name", ANALYSES_DIR)`, `load_value("name", "column", ANALYSES_DIR)`, and `load_figure("name", "fig.pdf", ANALYSES_DIR)` throughout the document.
 
 ## Rules
 
