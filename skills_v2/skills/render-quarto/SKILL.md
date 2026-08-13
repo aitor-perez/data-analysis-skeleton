@@ -37,7 +37,7 @@ python skills/render-quarto/scripts/render_quarto.py --out-dir my_report
 
 ## When invoked by the skeleton
 
-Use `0_plan/plan.md` and `3_analyses/*/results.json` to decide which deliverables to create and what they should contain. The skeleton orchestrator wires the deliverable to load values and figures from `results.json` via `skeleton_helpers.loaders`. Scaffold with `--create`, edit the `.qmd` files, then render with the skill.
+Use `0_plan/plan.md` and `3_analyses/*/results.json` to decide which deliverables to create and what they should contain. The skeleton orchestrator wires the deliverable to load values and figures from `results.json` via `skill_helpers.loaders`. Scaffold with `--create`, edit the `.qmd` files, then render with the skill.
 
 ## When invoked standalone
 

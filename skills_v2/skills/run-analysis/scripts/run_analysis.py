@@ -1,9 +1,9 @@
 # run_analysis.py — Scaffold and run a single analysis against a DuckDB database
 #
 # Create analysis:
-#   python run_analysis.py --create --db-dir 2_db --out-dir 3_analyses/q1
+#   python run_analysis.py --create --db-dir db --out-dir analyses/q1
 # Run analysis:
-#   python run_analysis.py --db-dir 2_db --out-dir 3_analyses/q1
+#   python run_analysis.py --db-dir db --out-dir analyses/q1
 
 import argparse
 import json

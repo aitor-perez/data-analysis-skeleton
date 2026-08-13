@@ -61,7 +61,7 @@ When invoking `render-quarto`, the skeleton orchestrator must edit the generated
 
 ```python
 from pathlib import Path
-from skeleton_helpers.loaders import load_analysis, load_value, load_figure
+from skill_helpers.loaders import load_analysis, load_value, load_figure
 
 # Assumes the deliverable is rendered from its own Quarto project under 4_output/<name>/.
 ANALYSES_DIR = Path.cwd().parents[1] / "3_analyses"

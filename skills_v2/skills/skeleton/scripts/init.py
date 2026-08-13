@@ -73,10 +73,10 @@ else:
     subprocess.run([sys.executable, "-m", "venv", str(venv_dir)], check=True)
     print(f"  ✓ .venv created", flush=True)
 
-    print("\n▶ Installing skeleton_helpers package...", flush=True)
+    print("\n▶ Installing skill_helpers package...", flush=True)
     pip = venv_dir / "bin" / "pip"
     subprocess.run([str(pip), "install", "--upgrade", "pip"], check=True)
     subprocess.run([str(pip), "install", "-e", str(catalog_dir)], check=True)
-    print("  ✓ skeleton_helpers installed", flush=True)
+    print("  ✓ skill_helpers installed", flush=True)
 
 print("\n✓ Project initialized", flush=True)

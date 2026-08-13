@@ -2,7 +2,7 @@
 # Run from this folder:
 #   python run.py
 #
-# This template uses skeleton_helpers.llm for structured LLM calls. Adapt it to
+# This template uses skill_helpers.llm for structured LLM calls. Adapt it to
 # your task: classification, extraction, summarization, geocoding, OCR, etc.
 
 import json
@@ -12,7 +12,7 @@ from pathlib import Path
 import pandas as pd
 from pydantic import BaseModel
 
-from skeleton_helpers.llm import call_llm, call_llm_batch
+from skill_helpers.llm import call_llm, call_llm_batch
 from dotenv import load_dotenv
 
 load_dotenv()

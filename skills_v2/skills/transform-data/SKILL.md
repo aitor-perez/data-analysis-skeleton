@@ -12,13 +12,13 @@ Scaffold and run a data transformation or enrichment, such as LLM classification
 ```bash
 # Scaffold the transformation script
 python skills/transform-data/scripts/transform_data.py --create \
-  --input 1_data/original/input.csv \
-  --out-dir 1_data/transformed/classify
+  --input data/input.csv \
+  --out-dir transformed/classify
 
 # Run the transformation
 python skills/transform-data/scripts/transform_data.py \
-  --input 1_data/original/input.csv \
-  --out-dir 1_data/transformed/classify
+  --input data/input.csv \
+  --out-dir transformed/classify
 ```
 
 ## Inputs

@@ -1,9 +1,9 @@
 # transform_data.py — Scaffold and run a data transformation
 #
 # Create transformation:
-#   python transform_data.py --create --input path/to/file.csv --out-dir 1_data/transformed/x
+#   python transform_data.py --create --input data/file.csv --out-dir transformed/x
 # Run transformation:
-#   python transform_data.py --input path/to/file.csv --out-dir 1_data/transformed/x
+#   python transform_data.py --input data/file.csv --out-dir transformed/x
 
 import argparse
 import shutil

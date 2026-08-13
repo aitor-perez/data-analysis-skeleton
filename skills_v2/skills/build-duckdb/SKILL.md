@@ -11,10 +11,10 @@ Build and validate a DuckDB database from raw data files.
 
 ```bash
 # Scaffold the build script
-python skills/build-duckdb/scripts/build_duckdb.py --create --data-dir 1_data --out-dir 2_db
+python skills/build-duckdb/scripts/build_duckdb.py --create --data-dir data --out-dir db
 
 # Run the build
-python skills/build-duckdb/scripts/build_duckdb.py --data-dir 1_data --out-dir 2_db
+python skills/build-duckdb/scripts/build_duckdb.py --data-dir data --out-dir db
 ```
 
 ## Inputs

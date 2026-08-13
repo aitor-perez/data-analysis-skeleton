@@ -29,13 +29,13 @@ The orchestrator (`skeleton`) keeps skeleton-specific responsibilities:
 - Initialize a new project (`init.py`): create directories, generate scaffold
   files (`.env.example`, `.gitignore`) only if they do not already exist, create
   `.venv`, and install the catalog Python package in editable mode so generated
-  scripts can import `skeleton_helpers`.
+  scripts can import `skill_helpers`.
 - Report pipeline state (`status.py`).
 - Decide the next pipeline step and invoke the appropriate standalone skill with
   skeleton-specific paths.
 - Clean generated artifacts (`clean.py`).
 - Skeleton-specific report constraints: when invoking `render-quarto`, edit the
-  generated `.qmd` files to import `skeleton_helpers.loaders` directly and load
+  generated `.qmd` files to import `skill_helpers.loaders` directly and load
   values and figures from `3_analyses/*/results.json`, ensuring no numbers are
   hardcoded.
 - Data collection and provenance: document raw files in `1_data/original/` using
@@ -118,7 +118,7 @@ Templates and guidance:
   C and reference them in a regular chapter; create one `.qmd` per chapter).
 - The templates contain no analysis-specific logic. When the skeleton
   orchestrator invokes this skill, it edits the generated `.qmd` files to
-  import `skeleton_helpers.loaders` directly and enforces skeleton-specific
+  import `skill_helpers.loaders` directly and enforces skeleton-specific
   report constraints.
 
 Outputs:
@@ -253,12 +253,12 @@ Outputs:
 - `out-dir/run.py`
 - one or more output files in `out-dir`
 
-## Shared Python package: `skeleton_helpers`
+## Shared Python package: `skill_helpers`
 
-`skeleton_helpers` is a shared Python package installed into project virtual
+`skill_helpers` is a shared Python package installed into project virtual
 environments. It is not a skill. Generated `run.py` scripts import
-`skeleton_helpers.llm` for structured LLM calls; Quarto deliverables import
-`skeleton_helpers.loaders` (typically through a skeleton-generated wrapper) to
+`skill_helpers.llm` for structured LLM calls; Quarto deliverables import
+`skill_helpers.loaders` (typically through a skeleton-generated wrapper) to
 load `results.json`.
 
 The package provides:
@@ -266,8 +266,8 @@ The package provides:
   logic, and support for multiple providers (RCP, OpenAI, ...).
 - `loaders`: output helpers for loading analysis results into reports.
 
-Location: `skills_v2/src/skeleton_helpers/`. The skill catalog root contains a
-`pyproject.toml` that packages `skeleton_helpers` so it can be installed into
+Location: `skills_v2/src/skill_helpers/`. The skill catalog root contains a
+`pyproject.toml` that packages `skill_helpers` so it can be installed into
 project virtual environments. `init.py` installs it in editable mode into the
 project `.venv`.
 
@@ -329,16 +329,16 @@ skills_v2/
   README.md
   pyproject.toml
   src/                       # shared Python package source
-    skeleton_helpers/
+    skill_helpers/
       __init__.py
       llm.py
       loaders.py
 ```
 
 Each skill is self-contained and carries its own `scripts/`, `assets/`, and
-`references/`. Shared code lives in `src/skeleton_helpers/`. The catalog is
+`references/`. Shared code lives in `src/skill_helpers/`. The catalog is
 installable as a Python package via `pyproject.toml` so generated scripts can
-`import skeleton_helpers`.
+`import skill_helpers`.
 
 ## Migration approach
 

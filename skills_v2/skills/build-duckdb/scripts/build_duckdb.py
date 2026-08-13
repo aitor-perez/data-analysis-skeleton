@@ -1,9 +1,9 @@
 # build_duckdb.py — Scaffold and run a DuckDB database build
 #
 # Create build script:
-#   python build_duckdb.py --create --data-dir 1_data --out-dir 2_db
+#   python build_duckdb.py --create --data-dir data --out-dir db
 # Run build:
-#   python build_duckdb.py --data-dir 1_data --out-dir 2_db
+#   python build_duckdb.py --data-dir data --out-dir db
 
 import argparse
 import re
