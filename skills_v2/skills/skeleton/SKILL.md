@@ -63,7 +63,8 @@ When invoking `render-quarto`, the skeleton orchestrator must edit the generated
 from pathlib import Path
 from skeleton_helpers.loaders import load_analysis, load_value, load_figure
 
-ANALYSES_DIR = Path(__file__).resolve().parents[2] / "3_analyses"
+# Assumes the deliverable is rendered from its own Quarto project under 4_output/<name>/.
+ANALYSES_DIR = Path.cwd().parents[1] / "3_analyses"
 ```
 
 and then use `load_analysis("name", ANALYSES_DIR)`, `load_value("name", "column", ANALYSES_DIR)`, and `load_figure("name", "fig.pdf", ANALYSES_DIR)` throughout the document.

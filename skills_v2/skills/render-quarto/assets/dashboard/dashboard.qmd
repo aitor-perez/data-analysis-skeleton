@@ -125,4 +125,4 @@ print("Replace with a chart showing distributions or trends.")
 
 **Last updated:** `{python} from datetime import date; date.today().strftime("%d %B %Y")`
 
-**Data pipeline:** All numbers are loaded from `3_analyses/*/results.json`. No values are hardcoded. To refresh, run `make analyses` then re-render.
+**Data pipeline:** All numbers are loaded from analysis outputs. No values are hardcoded. To refresh, re-run the underlying analyses and re-render.

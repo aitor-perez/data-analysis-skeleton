@@ -1,8 +1,8 @@
 # clean.py — Remove generated pipeline artifacts
 # Run from the project root:
-#   .venv/bin/python <path-to-skills>/data-analysis-clean/clean.py
+#   .venv/bin/python <path-to-catalog>/skills/skeleton/scripts/clean.py
 # Use --yes to actually delete:
-#   .venv/bin/python <path-to-skills>/data-analysis-clean/clean.py --yes
+#   .venv/bin/python <path-to-catalog>/skills/skeleton/scripts/clean.py --yes
 
 import argparse
 import sys
