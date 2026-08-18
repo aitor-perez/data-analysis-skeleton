@@ -1,6 +1,28 @@
 project:
   type: default
   output-dir: .
+  render:
+    - report.qmd   # master file that includes sections/_*.qmd partials
+
+metadata:
+  title: "Report Title"
+  subtitle: "Subtitle"
+  author: "Author Name"
+  department: "Department or Unit"
+  email: "email@example.com"
+  date: today
+  date-format: "D MMMM YYYY"
+  lang: en
+
+  # Layout options (see before-body.tex and preamble.tex)
+  inline-title: false       # true = compact inline title block + logo header
+  section-newpage: true     # false = continuous flow, no page break per section
+
+crossref:
+  fig-title: Figure
+  tbl-title: Table
+  fig-prefix: Figure
+  tbl-prefix: Table
 
 format:
   pdf:
@@ -14,10 +36,10 @@ format:
       - bottom=25mm
       - left=25mm
       - right=25mm
+    template-partials:
+      - ./before-body.tex
     include-in-header:
       - ./preamble.tex
-    include-before-body:
-      - ./titlepage.tex
     header-includes:
       - \graphicspath{{./}}
     toc: true

@@ -55,19 +55,33 @@ Use the earliest rule that matches:
 | `4_output` empty or partial | `render-quarto` | Render deliverables with `skills/render-quarto/scripts/render_quarto.py --out-dir 4_output/<name>`. |
 | All stages complete | none | Report that the pipeline is complete. |
 
-## Skeleton-specific wiring
+## Skeleton-specific wiring for render-quarto
 
-When invoking `render-quarto`, the skeleton orchestrator must edit the generated `.qmd` files so the deliverable loads values and figures from `3_analyses/*/results.json` instead of hardcoding numbers. The typical pattern is to add a setup cell:
+When the pipeline reaches `4_output`, use the `render-quarto` skill to scaffold deliverables and then wire them to the analysis outputs.
 
-```python
-from pathlib import Path
-from skill_helpers.loaders import load_analysis, load_value, load_figure
+1. Scaffold the deliverable:
 
-# Assumes the deliverable is rendered from its own Quarto project under 4_output/<name>/.
-ANALYSES_DIR = Path.cwd().parents[1] / "3_analyses"
-```
+   ```bash
+   skills/render-quarto/scripts/render_quarto.py --create <type> --out-dir 4_output/<name>
+   ```
 
-and then use `load_analysis("name", ANALYSES_DIR)`, `load_value("name", "column", ANALYSES_DIR)`, and `load_figure("name", "fig.pdf", ANALYSES_DIR)` throughout the document.
+2. Add a hidden setup cell near the top of the master `.qmd` file (e.g., `report.qmd`):
+
+   ```python
+   from pathlib import Path
+   from skill_helpers.loaders import load_analysis, load_value, load_figure
+
+   # Assumes the deliverable is rendered from its own Quarto project under 4_output/<name>/.
+   ANALYSES_DIR = Path.cwd().parents[1] / "3_analyses"
+   ```
+
+3. Replace placeholder text, value boxes, tables, and figures in the master and included partials with calls to `load_analysis`, `load_value`, and `load_figure` using `ANALYSES_DIR`.
+
+4. Render the deliverable:
+
+   ```bash
+   skills/render-quarto/scripts/render_quarto.py --out-dir 4_output/<name>
+   ```
 
 ## Rules
 

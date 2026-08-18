@@ -1,4 +1,4 @@
-# render_quarto.py — Create and render Quarto deliverables
+# render_quarto.py — Copy a Quarto deliverable template and render it
 #
 # Create deliverable:
 #   python render_quarto.py --create report --out-dir my_report
@@ -11,7 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SUPPORTED_TYPES = {"report", "report-brief", "slides", "dashboard"}
+SUPPORTED_TYPES = {"report", "slides", "dashboard"}
 
 
 def parse_args():
@@ -36,6 +36,15 @@ def fail(message: str) -> None:
     sys.exit(1)
 
 
+def require_command(name: str) -> None:
+    """Fail fast if a required executable is not on PATH."""
+    if shutil.which(name) is None:
+        fail(
+            f"'{name}' was not found on PATH. "
+            f"Install it and try again (https://quarto.org/docs/get-started/)."
+        )
+
+
 def copy_template(src: Path, dst: Path) -> None:
     """Copy a template directory tree, skipping existing files."""
     if not src.is_dir():
@@ -57,6 +66,9 @@ def copy_template(src: Path, dst: Path) -> None:
 args = parse_args()
 out_dir = args.out_dir.resolve()
 
+if out_dir.exists() and not out_dir.is_dir():
+    fail(f"output path exists and is not a directory: {out_dir}")
+
 skill_dir = Path(__file__).resolve().parent.parent
 templates_dir = skill_dir / "assets"
 
@@ -65,12 +77,22 @@ if args.create:
     if not template_dir.is_dir():
         fail(f"template not found: {template_dir}")
     copy_template(template_dir, out_dir)
-    print(f"✓ Created {args.create} deliverable in {out_dir}")
+    common_dir = templates_dir / "common"
+    if common_dir.is_dir():
+        copy_template(common_dir, out_dir)
+    print(f"✓ Created {args.create} template in {out_dir}")
+    print("  Edit the scaffolded files, then render with:")
+    print(f"    python render_quarto.py --out-dir {out_dir}")
     sys.exit(0)
 
 quarto_yml = out_dir / "_quarto.yml"
 if not quarto_yml.exists():
-    fail(f"_quarto.yml not found in {out_dir}; use --create to scaffold a template")
+    fail(
+        f"_quarto.yml not found in {out_dir}. "
+        f"Use --create to scaffold a template, or run this from a Quarto project directory."
+    )
+
+require_command("quarto")
 
 print(f"▶ Rendering {out_dir} ...")
 result = subprocess.run(

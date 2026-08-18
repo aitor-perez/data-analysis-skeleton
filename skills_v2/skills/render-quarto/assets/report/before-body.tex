@@ -1,0 +1,91 @@
+% =============================================================================
+%  Custom title block and running header.
+%
+%  Layout is selected by the `inline-title` metadata flag:
+%    - inline-title: true  -> compact inline title block + logo header
+%    - inline-title: false -> standalone title page + text header (default)
+%
+%  Section page breaks are controlled by the `section-newpage` metadata flag.
+%  Metadata values are filled from the project configuration.
+% =============================================================================
+
+% Apply the section-newpage setting.
+$if(section-newpage)$
+\sectionnewpagetrue
+$else$
+\sectionnewpagefalse
+$endif$
+
+$if(inline-title)$
+% --- Inline title block ------------------------------------------------------
+\brieftitle{$title$}{$subtitle$}{$date$}
+
+% --- Running header (logo) ---------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\raisebox{-0.3\height}{\includegraphics[height=0.7cm]{epfl_logo.png}}}
+\fancyhead[R]{\small\textcolor{midgray}{\thepage}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{{\color{lightgray}\hrule width\headwidth height\headrulewidth\vskip-\headrulewidth}}
+
+$else$
+% --- Standalone title page ---------------------------------------------------
+\begin{titlepage}
+\thispagestyle{empty}
+
+\vspace*{1cm}
+
+% -- Logo (top-left) ----------------------------------------------------------
+\noindent\includegraphics[width=3.8cm]{epfl_logo.png}
+
+\vspace{4.5cm}
+
+% -- Title block (centered) ---------------------------------------------------
+\begin{center}
+
+{\fontsize{30}{36}\selectfont\bfseries $title$\par}
+
+\vspace{1.2cm}
+
+{\color{lightgray}\rule{0.35\textwidth}{0.4pt}}
+
+\vspace{1.2cm}
+
+{\large\textcolor{subtlegray}{$subtitle$}\par}
+
+\end{center}
+
+\vfill
+
+% -- Author block --------------------------------------------------------------
+\begin{center}
+$for(author)$
+{\normalsize $author$\par}
+$sep$
+\vspace{0.2cm}
+$endfor$
+\vspace{0.2cm}
+{\small\textcolor{midgray}{$department$}\par}
+\vspace{0.1cm}
+{\small\textcolor{midgray}{$email$}\par}
+
+\vspace{2cm}
+
+{\normalsize $date$\par}
+\end{center}
+
+\vspace{1.5cm}
+
+\end{titlepage}
+
+% --- Running header (title text) ---------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{midgray}{$title$}}
+\fancyhead[R]{\small\textcolor{midgray}{\thepage}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{{\color{lightgray}\hrule width\headwidth height\headrulewidth\vskip-\headrulewidth}}
+
+$endif$

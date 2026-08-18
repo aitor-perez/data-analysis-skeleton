@@ -299,7 +299,6 @@ skills_v2/
         render_quarto.py
       assets/
         report/
-        report-brief/
         slides/
         dashboard/
         images/

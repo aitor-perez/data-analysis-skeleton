@@ -112,25 +112,23 @@
 
 % --- Headers and footers ----------------------------------------------------
 \usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-% Customize the left header text per project:
-\fancyhead[L]{\small\textcolor{midgray}{Report}}
-\fancyhead[R]{\small\textcolor{midgray}{\thepage}}
-\fancyfoot{}
-\renewcommand{\headrulewidth}{0.3pt}
-\renewcommand{\headrule}{{\color{lightgray}\hrule width\headwidth height\headrulewidth\vskip-\headrulewidth}}
 
 % --- Title page styling ------------------------------------------------------
 \usepackage{titling}
 
-% Suppress Quarto's default \maketitle (we use a custom title page).
+% Suppress Quarto's default \maketitle (we render a custom title block).
 \renewcommand{\maketitle}{}
+
+% --- Adaptive section page breaks -------------------------------------------
+% The `section-newpage` metadata flag controls whether each top-level section
+% starts a new page. Default: true. Set to false for a continuous flow.
+\newif\ifsectionnewpage
+\sectionnewpagetrue
 
 % --- Section formatting ------------------------------------------------------
 \usepackage{titlesec}
 
-\titleformat{\section}{\newpage\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\section}{\ifsectionnewpage\newpage\fi\Large\bfseries}{\thesection}{1em}{}
 \titlespacing*{\section}{0pt}{2em}{0.8em}
 
 \titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
@@ -151,6 +149,23 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+% --- Compact title block -----------------------------------------------------
+% Renders an inline title block: \brieftitle{title}{subtitle}{date}.
+% Typically used together with the inline-title branch in before-body.tex.
+\newcommand{\brieftitle}[3]{%
+  \vspace*{-0.5em}%
+  {\fontsize{22}{26}\selectfont\bfseries #1\par}%
+  \ifx&#2&\else%
+    \vspace{0.3em}%
+    {\large\textcolor{subtlegray}{#2}\par}%
+  \fi%
+  \vspace{0.3em}%
+  {\normalsize\textcolor{midgray}{#3}\par}%
+  \vspace{0.2em}%
+  {\color{lightgray}\rule{\textwidth}{0.4pt}}%
+  \vspace{0.8em}%
+}
+
 % --- Inline score bars (optional, for visual indicators) ---------------------
 \usepackage{tikz}
 \newcommand{\scorebar}[1]{%
@@ -167,5 +182,4 @@
 \usepackage{multicol}
 
 % --- Figure paths ------------------------------------------------------------
-% NOTE: \graphicspath is set per deliverable in the .qmd's header-includes,
-% so that paths resolve correctly from each subfolder.
+% \graphicspath is set globally in _quarto.yml so paths resolve from the project root.
