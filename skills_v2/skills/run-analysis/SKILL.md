@@ -26,8 +26,8 @@ python skills/run-analysis/scripts/run_analysis.py --db-dir db --out-dir analyse
 ## Behavior
 
 - With `--create`: copy `assets/run.py` into `--out-dir/run.py` only if it does not already exist. The template contains commented placeholders that you must edit before running.
-- Without `--create`: require `run.py` in `--out-dir`, run it, and validate that `results.json` matches the expected schema.
-- Fail fast with a clear error if `schema.md` is missing, if there is not exactly one `.duckdb` file, or if validation fails.
+- Without `--create`: require `run.py` in `--out-dir`, run it, and check that `results.json` was created.
+- Fail fast with a clear error if `schema.md` is missing, if there is not exactly one `.duckdb` file, or if `results.json` is not produced.
 
 ## Generated script conventions
 

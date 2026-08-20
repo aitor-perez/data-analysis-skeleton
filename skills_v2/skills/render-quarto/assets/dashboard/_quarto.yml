@@ -1,6 +1,18 @@
 project:
   type: default
   output-dir: .
+  render:
+    - dashboard.qmd
+
+metadata:
+  title: "Dashboard Title"
+  subtitle: "Subtitle"
+  author: "Author Name"
+  department: "Department or Unit"
+  email: "email@example.com"
+  date: today
+  date-format: "D MMMM YYYY"
+  lang: en
 
 plotly:
   connected: true
