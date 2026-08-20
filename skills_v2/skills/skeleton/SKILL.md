@@ -52,7 +52,7 @@ Use the earliest rule that matches:
 | `1_data` empty or partial | `skeleton` (collect step) | Collect raw files and document them with `skills/skeleton/scripts/document_sources.py --data-dir 1_data/original`. |
 | `2_db` not built, stale, or partial | `build-duckdb` | Run `skills/build-duckdb/scripts/build_duckdb.py --data-dir 1_data --out-dir 2_db`. |
 | `3_analyses` empty, incomplete, or partial | `run-analysis` | Create or run analyses with `skills/run-analysis/scripts/run_analysis.py --db-dir 2_db --out-dir 3_analyses/<name>`. |
-| `4_output` empty or partial | `render-quarto` | Render deliverables with `skills/render-quarto/scripts/render_quarto.py --out-dir 4_output/<name>`. |
+| `4_output` empty or partial | `render-quarto` | Scaffold and render deliverables with the `render-quarto` skill. |
 | All stages complete | none | Report that the pipeline is complete. |
 
 ## Skeleton-specific wiring for render-quarto

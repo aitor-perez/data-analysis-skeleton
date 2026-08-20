@@ -53,6 +53,14 @@ If an appendix is included, add `\appendix` before its include:
 {{< include sections/_08_appendix.qmd >}}
 ```
 
+## Building the report
+
+1. Propose a set of chapters and subsections based on the section catalog above and the user's request. Confirm the final outline before writing files.
+2. Create one partial under `sections/` for each chapter, named `_01_<slug>.qmd`, `_02_<slug>.qmd`, and so on. The leading underscore tells Quarto to ignore the file so it is not rendered on its own.
+3. Write the chapter heading (`# Heading`) and any subsections (`## Subsection`) inside the partial. Preserve attributes such as `{.unnumbered}`.
+4. The disclaimer partial should contain only the disclaimer box (no heading), since it is not a section.
+5. Create a root-level `report.qmd` that includes the partials in order. The `render:` list under `project:` in `_quarto.yml` already points to `report.qmd`; do not change it.
+
 ## Cross-references
 
 Use chapter-scoped labels so identifiers stay unique once partials are merged:

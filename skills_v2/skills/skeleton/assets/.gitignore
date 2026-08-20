@@ -16,9 +16,8 @@ __pycache__/
 # Each deliverable subfolder in 4_output/ may produce .tex, .log, *_files/
 4_output/**/*.log
 4_output/**/*_files/
-# Quarto-generated intermediate .tex (matches .qmd stem) — but keep titlepage.tex
+# Quarto-generated intermediate .tex (matches .qmd stem) — keep source partials
 4_output/**/*.tex
-!4_output/**/titlepage.tex
-# Keep template files
-!4_output/templates/**
+!4_output/**/preamble.tex
+!4_output/**/before-body.tex
 

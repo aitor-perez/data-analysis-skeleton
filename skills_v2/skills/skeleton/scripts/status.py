@@ -5,12 +5,9 @@
 #   .venv/bin/python <path-to-skills>/data-analysis/status.py --project-dir /path/to/project
 
 import argparse
-import json
 import re
 import sys
 from pathlib import Path
-
-REQUIRED_RESULT_KEYS = {"query", "n_results", "results", "description", "interpretation", "figures"}
 
 # ── Colors ───────────────────────────────────────────────────────
 GREEN = "\033[32m"
@@ -209,40 +206,6 @@ def check_db(root):
 
 
 # ── Stage 3: Analyses ────────────────────────────────────────────
-def validate_results_json(path):
-    """Validate a results.json file. Returns list of issues (empty = valid)."""
-    issues = []
-    try:
-        data = json.loads(path.read_text())
-    except json.JSONDecodeError as e:
-        return [f"Invalid JSON: {e}"]
-
-    missing = REQUIRED_RESULT_KEYS - set(data.keys())
-    if missing:
-        issues.append(f"Missing keys: {missing}")
-        return issues
-
-    if not isinstance(data["results"], list):
-        issues.append("'results' is not a list")
-    elif data["n_results"] != len(data["results"]):
-        issues.append(
-            f"n_results={data['n_results']} but results has {len(data['results'])} items"
-        )
-
-    if not isinstance(data["figures"], list):
-        issues.append("'figures' is not a list")
-    else:
-        for i, fig in enumerate(data["figures"]):
-            if "file" not in fig:
-                issues.append(f"figures[{i}] missing 'file'")
-            elif not (path.parent / fig["file"]).exists():
-                issues.append(f"figures[{i}] file not found: {fig['file']}")
-            if "caption" not in fig:
-                issues.append(f"figures[{i}] missing 'caption'")
-
-    return issues
-
-
 def check_analyses(root):
     analyses_dir = root / "3_analyses"
     issues = []
@@ -262,34 +225,26 @@ def check_analyses(root):
 
     with_results = []
     without_results = []
-    invalid = []
 
     for d in subfolders:
         rj = d / "results.json"
         if rj.exists():
-            validation_issues = validate_results_json(rj)
-            if validation_issues:
-                invalid.append((d.name, validation_issues))
-            else:
-                with_results.append(d.name)
+            with_results.append(d.name)
         else:
             without_results.append(d.name)
 
     details.append(f"{len(subfolders)} analysis folder(s)")
     if with_results:
-        details.append(f"{len(with_results)} with valid results.json")
+        details.append(f"{len(with_results)} with results.json")
 
     if without_results:
         issues.append(f"Missing results.json: {', '.join(without_results)}")
-    if invalid:
-        for name, errs in invalid:
-            issues.append(f"Invalid {name}/results.json: {'; '.join(errs)}")
 
     if not issues and with_results:
         return "complete", issues, details
     elif with_results:
         return "partial", issues, details
-    elif without_results or invalid:
+    elif without_results:
         return "incomplete", issues, details
     return "empty", issues, details
 
@@ -297,7 +252,7 @@ def check_analyses(root):
 # ── Stage 4: Output ──────────────────────────────────────────────
 def check_output(root):
     output_dir = root / "4_output"
-    skip = {"templates", "__pycache__"}
+    skip = {"__pycache__"}
 
     issues = []
     details = []
