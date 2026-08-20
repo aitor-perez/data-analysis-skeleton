@@ -1,12 +1,3 @@
----
-title: "Presentation Title"
-subtitle: "Subtitle"
-author: "Author Name"
-institute: "EPFL"
-date: today
-date-format: "D MMMM YYYY"
----
-
 ## Context
 
 - What is the project about?
@@ -20,7 +11,8 @@ date-format: "D MMMM YYYY"
 \begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=2pt]
 \item \textbf{Data source.} \textit{Describe the data and its limitations.}
 \item \textbf{AI-assisted.} \textit{If applicable, describe how AI was used.}
-\item \textbf{Scope.} \textit{Clarify what this analysis is and is not.}
+\item \textbf{Methodological choices.} \textit{Flag key analytical choices that affect interpretation.}
+\item \textbf{Scope and intent.} \textit{Clarify what this analysis is and is not.}
 \end{itemize}
 \end{disclaimerbox}
 

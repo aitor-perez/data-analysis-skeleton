@@ -1,6 +1,17 @@
 project:
   type: default
   output-dir: .
+  render:
+    - slides.qmd
+
+metadata:
+  title: "Presentation Title"
+  subtitle: "Subtitle"
+  author: "Author Name"
+  institute: "Department or Unit"
+  date: today
+  date-format: "D MMMM YYYY"
+  lang: en
 
 format:
   beamer:

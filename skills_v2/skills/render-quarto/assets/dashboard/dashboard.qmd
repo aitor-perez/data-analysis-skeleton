@@ -1,7 +1,3 @@
----
-title: "Dashboard Title"
----
-
 ```{python}
 #| echo: false
 # Use Plotly CDN instead of embedding the full library (~3.5MB) inline
@@ -120,7 +116,9 @@ print("Replace with a chart showing distributions or trends.")
 
 **AI-assisted.** *If applicable, describe how AI was used and what safeguards were applied.*
 
-**Scope.** *Clarify what this dashboard is and is not.*
+**Methodological choices.** *Flag key analytical choices that affect interpretation.*
+
+**Scope and intent.** *Clarify what this dashboard is and is not.*
 :::
 
 **Last updated:** `{python} from datetime import date; date.today().strftime("%d %B %Y")`
