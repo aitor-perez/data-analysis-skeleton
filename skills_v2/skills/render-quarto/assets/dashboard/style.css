@@ -7,12 +7,24 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Override Bootstrap theme colors so bg-primary/secondary/etc. are neutral */
-$primary:   #FFFFFF;
-$secondary: #FFFFFF;
-$success:   #FFFFFF;
-$warning:   #FFFFFF;
-$danger:    #FFFFFF;
+/* Value box palette — defined once and reused below */
+$vb-blue:        #3B82F6;
+$vb-blue-bg:     #EFF6FF;
+$vb-purple:      #8B5CF6;
+$vb-purple-bg:   #F5F3FF;
+$vb-emerald:     #10B981;
+$vb-emerald-bg:  #ECFDF5;
+$vb-amber:       #F59E0B;
+$vb-amber-bg:    #FFFBEB;
+$vb-rose:        #F43F5E;
+$vb-rose-bg:     #FFF1F2;
+
+/* Bootstrap theme colors used by dashboard value boxes */
+$primary:   $vb-blue;
+$secondary: $vb-purple;
+$success:   $vb-emerald;
+$warning:   $vb-amber;
+$danger:    $vb-rose;
 
 /*-- scss:rules --*/
 
@@ -31,20 +43,20 @@ $danger:    #FFFFFF;
   --accent-light:   #EEF2FF;
 
   /* Value box palette */
-  --vb-blue:        #3B82F6;
-  --vb-blue-bg:     #EFF6FF;
-  --vb-purple:      #8B5CF6;
-  --vb-purple-bg:   #F5F3FF;
-  --vb-emerald:     #10B981;
-  --vb-emerald-bg:  #ECFDF5;
-  --vb-amber:       #F59E0B;
-  --vb-amber-bg:    #FFFBEB;
-  --vb-rose:        #F43F5E;
-  --vb-rose-bg:     #FFF1F2;
+  --vb-blue:        $vb-blue;
+  --vb-blue-bg:     $vb-blue-bg;
+  --vb-purple:      $vb-purple;
+  --vb-purple-bg:   $vb-purple-bg;
+  --vb-emerald:     $vb-emerald;
+  --vb-emerald-bg:  $vb-emerald-bg;
+  --vb-amber:       $vb-amber;
+  --vb-amber-bg:    $vb-amber-bg;
+  --vb-rose:        $vb-rose;
+  --vb-rose-bg:     $vb-rose-bg;
 
   /* Disclaimer */
-  --disclaimer-bg:    #FFFBEB;
-  --disclaimer-bar:   #F59E0B;
+  --disclaimer-bg:    $vb-amber-bg;
+  --disclaimer-bar:   $vb-amber;
   --disclaimer-title: #78350F;
 }
 

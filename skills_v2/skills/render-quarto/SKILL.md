@@ -16,8 +16,8 @@ Use this skill when the user asks for a new report, slide deck, or dashboard, or
 1. Read this SKILL.md.
 2. Read the reference README for the template you will scaffold (`references/<type>/README.md`).
 3. Scaffold the deliverable with `render_quarto.py --create <type> --out-dir <dir>`.
-4. For the `report` template, read `references/report/README.md`, infer a sensible configuration from the user's request and available context, propose it, and ask the user to confirm or adjust.
-5. Apply the confirmed choices, create the section partials under `sections/` and the master `report.qmd`, then render with `render_quarto.py --out-dir <dir>`.
+4. Read the reference README for the chosen template, infer a sensible configuration and content structure from the user's request and available context, propose it, and ask the user to confirm or adjust.
+5. Apply the confirmed choices, create the content file(s) described in the reference README (e.g., `slides.qmd`, `dashboard.qmd`, or `report.qmd` and its `sections/` partials), then render with `render_quarto.py --out-dir <dir>`.
 
 ## Usage
 
@@ -36,7 +36,7 @@ python skills/render-quarto/scripts/render_quarto.py --out-dir my_report
 
 ## Behavior
 
-- With `--create`: copy the template infrastructure (`_quarto.yml`, preambles, styles, logos) into `--out-dir`. Never overwrite an existing `_quarto.yml` or supporting file. For the `report` template, propose a structure and layout based on the reference README, confirm with the user, then create the section partials under `sections/` and the master `report.qmd` file.
+- With `--create`: copy the template infrastructure (`_quarto.yml`, preambles, styles, logos) into `--out-dir`. Never overwrite an existing `_quarto.yml` or supporting file. Then, based on the reference README, propose a structure and content outline, confirm with the user, and create the content file(s) (e.g., `slides.qmd`, `dashboard.qmd`, or `report.qmd` with its `sections/` partials).
 - Without `--create`: require a `_quarto.yml` in `--out-dir`, verify that `quarto` is on `PATH`, and run `quarto render <out-dir>` as a Quarto project.
 - Fail fast if `--create` is not passed and `--out-dir` does not contain `_quarto.yml`.
 - Fail fast if `quarto` is not installed when rendering.
@@ -89,8 +89,8 @@ For example, a figure in a chapter whose slug is `results` could be labeled `{#f
 
 ## Authoring guidance
 
-After scaffolding a `report` template and confirming the outline with the user:
+After scaffolding a template and confirming the outline with the user:
 
 1. Fill in `_quarto.yml` with the shared metadata and the chosen layout options.
-2. Create each chapter partial with the agreed headings and subsections.
+2. Create the content file(s) described in the reference README with the agreed headings and sections.
 3. Add content under the headings; do not hardcode numbers, figures, or tables. Load them dynamically from your analysis outputs.

@@ -30,6 +30,7 @@ Format and dashboard options (theme, orientation, logo, nav buttons) live under 
   - The first `## Row {height=...}` contains the value boxes; a second row contains the chart and table.
 - **Details** — a detailed table and a distribution or trend chart.
 - **About** — disclaimers, data provenance, and refresh instructions.
+  - Include a statement such as: "All numbers are loaded from analysis outputs. No values are hardcoded. To refresh, re-run the underlying analyses and re-render."
 
 Rows are created with `## Row {height=...}`; columns are created with `### Column Name {width=...}`.
 
@@ -40,6 +41,31 @@ Rows are created with `## Row {height=...}`; columns are created with `### Colum
 - Summary table and distribution chart placeholders.
 - Disclaimer text.
 - Logo (`epfl_logo.png`) and nav-button link if needed.
+
+## Code patterns
+
+Set up the connected Plotly renderer once at the top:
+
+```python
+#| echo: false
+import plotly.io as pio
+pio.renderers.default = "notebook_connected"
+```
+
+Value boxes use the `valuebox` content tag:
+
+```python
+#| content: valuebox
+#| title: "Total Records"
+# TODO: replace with a value from your analysis outputs
+dict(value="1,247", color="primary")
+```
+
+Inline Python can show dynamic dates:
+
+```markdown
+**Last updated:** `{python} from datetime import date; date.today().strftime("%d %B %Y")`
+```
 
 ## Notes
 

@@ -68,14 +68,20 @@ When the pipeline reaches `4_output`, use the `render-quarto` skill to scaffold 
 2. Add a hidden setup cell near the top of the master `.qmd` file (e.g., `report.qmd`):
 
    ```python
+   #| echo: false
    from pathlib import Path
    from skill_helpers.loaders import load_analysis, load_value, load_figure
 
    # Assumes the deliverable is rendered from its own Quarto project under 4_output/<name>/.
    ANALYSES_DIR = Path.cwd().parents[1] / "3_analyses"
+
+   # Example usage:
+   # data = load_analysis("example_analysis", ANALYSES_DIR)
+   # value = load_value("example_analysis", "column_name", ANALYSES_DIR)
+   # fig_path = load_figure("example_analysis", "chart.pdf", ANALYSES_DIR)
    ```
 
-3. Replace placeholder text, value boxes, tables, and figures in the master and included partials with calls to `load_analysis`, `load_value`, and `load_figure` using `ANALYSES_DIR`.
+3. Replace placeholder text, value boxes, tables, and figures in the master and included partials with calls like `load_analysis("name", ANALYSES_DIR)`, `load_value("name", "column", ANALYSES_DIR)`, and `load_figure("name", "fig.pdf", ANALYSES_DIR)`.
 
 4. Render the deliverable:
 

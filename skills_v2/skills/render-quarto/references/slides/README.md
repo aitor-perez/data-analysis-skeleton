@@ -38,6 +38,39 @@ Format options (theme, aspect ratio, fonts, etc.) live under `format: beamer:` i
 - Disclaimer items.
 - Commented Python code that loads analysis results.
 
+## Code patterns
+
+Python cells are hidden with `#| echo: false`:
+
+```python
+#| echo: false
+# TODO: load results from your analysis outputs
+# data = ...
+# print(data["interpretation"])
+```
+
+Inline Python can be used for dynamic figure paths:
+
+```markdown
+![Caption](`{python} your_figure_path`)
+```
+
+Small tables can be written directly in LaTeX:
+
+```latex
+\begin{table}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Category} & \textbf{Count} \\
+\midrule
+A & 123 \\
+B & 456 \\
+\bottomrule
+\end{tabular}
+\end{table}
+```
+
 ## Notes
 
 - Uses `preamble.tex` for Beamer formatting, fonts, colors, and the title page layout.
