@@ -81,7 +81,7 @@ if args.create:
     if common_dir.is_dir():
         copy_template(common_dir, out_dir)
     print(f"✓ Created {args.create} template in {out_dir}")
-    print("  Edit the scaffolded files, then render with:")
+    print("  Template scaffolded. Create the content files, then render with:")
     print(f"    python render_quarto.py --out-dir {out_dir}")
     sys.exit(0)
 
